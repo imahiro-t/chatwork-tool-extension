@@ -4,6 +4,11 @@ document.addEventListener("mousedown", (event) => {
     const textarea = document.querySelector("#_chatText");
     if (to && textarea) {
       textarea.value = `${to}\n${textarea.value}`;
+      setTimeout(() => {
+        const targetNode = document
+          .querySelector("#_wrapper")
+          ?.lastChild?.firstChild?.setAttribute("style", "opacity: 0;");
+      }, 100);
     }
   }
 });
