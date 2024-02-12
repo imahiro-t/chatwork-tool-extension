@@ -3,15 +3,17 @@ window.addEventListener("hashchange", (_event) => {
 });
 
 const initChatSendArea = () => {
-  const iconParentNode = document
-    .querySelector("#_chatSendArea")
-    ?.querySelector("._showDescription")?.parentNode;
-  if (iconParentNode) {
-    iconParentNode.appendChild(createInfoNode(iconParentNode));
-    iconParentNode.appendChild(createInfoWithTitleNode(iconParentNode));
-    iconParentNode.appendChild(createCodeNode(iconParentNode));
-    iconParentNode.appendChild(createHrNode(iconParentNode));
-  }
+  setTimeout(() => {
+    const iconParentNode = document
+      .querySelector("#_chatSendArea")
+      ?.querySelector("._showDescription")?.parentNode;
+    if (iconParentNode) {
+      iconParentNode.appendChild(createInfoNode(iconParentNode));
+      iconParentNode.appendChild(createInfoWithTitleNode(iconParentNode));
+      iconParentNode.appendChild(createCodeNode(iconParentNode));
+      iconParentNode.appendChild(createHrNode(iconParentNode));
+    }
+  }, 500);
 };
 
 const createInfoNode = (iconParentNode) => {
