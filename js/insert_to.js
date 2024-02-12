@@ -1,14 +1,36 @@
+let srcNode;
+let dummyNode;
+
+document.addEventListener("mousemove", (event) => {
+  if (event.shiftKey) {
+    if (event.target.classList.contains("userIconImage")) {
+      const node = event.target.closest("button");
+      if (node && !srcNode && !dummyNode) {
+        srcNode = node;
+        dummyNode = srcNode.cloneNode(true);
+        node.parentNode.replaceChild(dummyNode, srcNode);
+      }
+    }
+  }
+});
+
+document.addEventListener("mouseout", (event) => {
+  if (event.target.classList.contains("userIconImage")) {
+    const node = event.target.closest("button");
+    if (node && srcNode && dummyNode) {
+      node.parentNode.replaceChild(srcNode, dummyNode);
+      srcNode = undefined;
+      dummyNode = undefined;
+    }
+  }
+});
+
 document.addEventListener("mousedown", (event) => {
   if (event.shiftKey) {
     const to = findTo(event.target);
     const textarea = document.querySelector("#_chatText");
     if (to && textarea) {
       textarea.value = `${to}\n${textarea.value}`;
-      setTimeout(() => {
-        const targetNode = document
-          .querySelector("#_wrapper")
-          ?.lastChild?.firstChild?.setAttribute("style", "opacity: 0;");
-      }, 100);
     }
   }
 });
