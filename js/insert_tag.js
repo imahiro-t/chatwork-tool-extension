@@ -52,9 +52,15 @@ const createInfoWithTitleNode = (iconParentNode) => {
       infoWithTitleNode.querySelector("svg")
     );
   infoWithTitleNode.addEventListener("mousedown", (_event) => {
-    const startTag = "[info][title]";
-    const endTag = "[/title][/info]\n";
-    insertTag(startTag, endTag);
+    if (textSelected()) {
+      const startTag = "[info][title][/title]";
+      const endTag = "[/info]\n";
+      insertTag(startTag, endTag);
+    } else {
+      const startTag = "[info][title]";
+      const endTag = "[/title][/info]\n";
+      insertTag(startTag, endTag);
+    }
   });
   return infoWithTitleNode;
 };
@@ -99,6 +105,17 @@ const createHrNode = (iconParentNode) => {
 
 const htmlStringToNode = (str) => {
   return document.createRange().createContextualFragment(str).firstChild;
+};
+
+const textSelected = () => {
+  const textarea = document.querySelector("#_chatText");
+  if (textarea) {
+    const selectionStart = textarea.selectionStart;
+    const selectionEnd = textarea.selectionEnd;
+    return selectionStart !== selectionEnd;
+  } else {
+    return false;
+  }
 };
 
 const insertTag = (startTag, endTag) => {
