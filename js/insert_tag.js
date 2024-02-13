@@ -1,19 +1,19 @@
 window.addEventListener("hashchange", (_event) => {
-  initChatSendArea();
+  setTimeout(() => {
+    initChatSendArea();
+  }, 100);
 });
 
 const initChatSendArea = () => {
-  setTimeout(() => {
-    const iconParentNode = document
-      .querySelector("#_chatSendArea")
-      ?.querySelector("._showDescription")?.parentNode;
-    if (iconParentNode) {
-      iconParentNode.appendChild(createInfoNode(iconParentNode));
-      iconParentNode.appendChild(createInfoWithTitleNode(iconParentNode));
-      iconParentNode.appendChild(createCodeNode(iconParentNode));
-      iconParentNode.appendChild(createHrNode(iconParentNode));
-    }
-  }, 500);
+  const iconParentNode = document
+    .querySelector("#_chatSendArea")
+    ?.querySelector("._showDescription")?.parentNode;
+  if (iconParentNode) {
+    iconParentNode.appendChild(createInfoNode(iconParentNode));
+    iconParentNode.appendChild(createInfoWithTitleNode(iconParentNode));
+    iconParentNode.appendChild(createCodeNode(iconParentNode));
+    iconParentNode.appendChild(createHrNode(iconParentNode));
+  }
 };
 
 const createInfoNode = (iconParentNode) => {
@@ -136,4 +136,6 @@ const insertTag = (startTag, endTag) => {
   }
 };
 
-initChatSendArea();
+setTimeout(() => {
+  initChatSendArea();
+}, 1000);
