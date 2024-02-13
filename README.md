@@ -7,6 +7,10 @@
   - [hr]
 - Insert To tag on click user icon with Shift key
 
+### 1.0.3
+
+- ♻️ not to show profile window on Click with Shift
+
 ### 1.0.2
 
 - 💄 not to show profile window as much as possible on Click with Shift
