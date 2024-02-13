@@ -1,29 +1,62 @@
+let mousePositionNode;
 let srcNode;
 let dummyNode;
 
 document.addEventListener("mousemove", (event) => {
+  mousePositionNode = event.target;
+});
+
+document.addEventListener("mouseover", (event) => {
   if (event.shiftKey) {
-    if (event.target.classList.contains("userIconImage")) {
-      const node = event.target.closest("button");
-      if (node && !srcNode && !dummyNode) {
-        srcNode = node;
-        dummyNode = srcNode.cloneNode(true);
-        node.parentNode.replaceChild(dummyNode, srcNode);
-      }
-    }
+    replaceToDummy(event.target);
   }
 });
 
 document.addEventListener("mouseout", (event) => {
-  if (event.target.classList.contains("userIconImage")) {
-    const node = event.target.closest("button");
-    if (node && srcNode && dummyNode) {
-      node.parentNode.replaceChild(srcNode, dummyNode);
-      srcNode = undefined;
-      dummyNode = undefined;
-    }
+  if (event.shiftKey) {
+    recoverFromDummy(event.target);
   }
 });
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Shift") {
+    replaceToDummy(mousePositionNode);
+  }
+});
+
+document.addEventListener("keyup", (event) => {
+  if (event.key === "Shift") {
+    recoverFromDummy(mousePositionNode);
+  }
+});
+
+const replaceToDummy = (eventNode) => {
+  if (eventNode.classList.contains("userIconImage")) {
+    const node = eventNode.closest("button");
+    if (node && !srcNode && !dummyNode) {
+      srcNode = node;
+      dummyNode = srcNode.cloneNode(true);
+      try {
+        node.parentNode.replaceChild(dummyNode, srcNode);
+      } catch (_e) {}
+    }
+  }
+};
+
+const recoverFromDummy = (eventNode) => {
+  if (eventNode.classList.contains("userIconImage")) {
+    const node = eventNode.closest("button");
+    if (node && srcNode && dummyNode) {
+      try {
+        node.parentNode.replaceChild(srcNode, dummyNode);
+      } catch (_e) {
+      } finally {
+        srcNode = undefined;
+        dummyNode = undefined;
+      }
+    }
+  }
+};
 
 document.addEventListener("mousedown", (event) => {
   if (event.shiftKey) {
