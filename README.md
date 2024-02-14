@@ -1,11 +1,22 @@
 # Chatwork Tools
 
-- Display icon for tags
+- Display icon for tags at chat area
   - [info]
   - [info][title]
   - [code]
   - [hr]
+- Display icon for tags and emoji at task area
+  - [info]
+  - [info][title]
+  - [code]
+  - [hr]
+  - (please)
+  - (bow)
 - Insert To tag on click user icon with Shift key
+
+### 1.1.0
+
+- ✨ Enable to insert tags to task field
 
 ### 1.0.4
 

@@ -1,7 +1,7 @@
 {
   "name": "Chatwork Tools",
   "description": "Insert tags from click each icon. Insert To tag on click user icon with Shift key.",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "manifest_version": 3,
   "content_scripts": [
     {
