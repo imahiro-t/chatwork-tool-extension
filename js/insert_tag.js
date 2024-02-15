@@ -19,10 +19,16 @@ const initChatSendArea = () => {
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
   if (iconParentNode) {
-    iconParentNode.appendChild(createInfoNode(iconParentNode, "chat"));
-    iconParentNode.appendChild(createInfoWithTitleNode(iconParentNode, "chat"));
-    iconParentNode.appendChild(createCodeNode(iconParentNode, "chat"));
-    iconParentNode.appendChild(createHrNode(iconParentNode, "chat"));
+    if (
+      iconParentNode.lastChild.querySelector("button")?.id !== "__tag_hr_chat"
+    ) {
+      iconParentNode.appendChild(createInfoNode(iconParentNode, "chat"));
+      iconParentNode.appendChild(
+        createInfoWithTitleNode(iconParentNode, "chat")
+      );
+      iconParentNode.appendChild(createCodeNode(iconParentNode, "chat"));
+      iconParentNode.appendChild(createHrNode(iconParentNode, "chat"));
+    }
   }
 };
 
@@ -55,7 +61,10 @@ const initTaskArea = () => {
 
 const createInfoNode = (iconParentNode, targetType) => {
   const svg = htmlStringToNode(
-    `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="16px" viewBox="0 0 24 24" width="16px" fill="#000000"><g><rect fill="none" height="24" width="24" x="0"/></g><g><g><g><path d="M4,9h16v2H4V9z M4,13h10v2H4V13z"/></g></g></g></svg>`
+    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
+    <rect fill="none" height="24" width="24" x="0"/>
+    <path d="M4,9h16v2H4V9z M4,13h10v2H4V13z"/>
+    </svg>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__tag_info_${targetType}`;
@@ -75,7 +84,10 @@ const createInfoNode = (iconParentNode, targetType) => {
 
 const createInfoWithTitleNode = (iconParentNode, targetType) => {
   const svg = htmlStringToNode(
-    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/></svg>`
+    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"/>
+    </svg>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__tag_info_title_${targetType}`;
@@ -101,7 +113,10 @@ const createInfoWithTitleNode = (iconParentNode, targetType) => {
 
 const createCodeNode = (iconParentNode, targetType) => {
   const svg = htmlStringToNode(
-    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>`
+    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+    </svg>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__tag_code_${targetType}`;
@@ -121,7 +136,9 @@ const createCodeNode = (iconParentNode, targetType) => {
 
 const createHrNode = (iconParentNode, targetType) => {
   const svg = htmlStringToNode(
-    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px"><path d="M160-440v-80h640v80H160Z"/></svg>`
+    `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px">
+    <path d="M160-440v-80h640v80H160Z" fill-rule="evenodd"/>
+    </svg>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__tag_hr_${targetType}`;
