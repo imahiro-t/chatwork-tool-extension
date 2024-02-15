@@ -14,6 +14,10 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.1.1
+
+- 💄 change fill color for dark mode
+
 ### 1.1.0
 
 - ✨ Enable to insert tags to task field
