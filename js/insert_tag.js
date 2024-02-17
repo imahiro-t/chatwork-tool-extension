@@ -223,6 +223,11 @@ const insertTag = (startTag, endTag, targetType) => {
     const selection = textarea.value.substring(selectionStart, selectionEnd);
     const after = textarea.value.substring(selectionEnd, textarea.value.length);
     textarea.value = before + startTag + selection + endTag + after;
+    textarea.dispatchEvent(
+      new Event("input", {
+        bubbles: true,
+      })
+    );
     setTimeout(() => {
       textarea.focus();
       textarea.selectionStart = selectionEnd + startTag.length;

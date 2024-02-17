@@ -64,6 +64,11 @@ document.addEventListener("mousedown", (event) => {
     const textarea = document.querySelector("#_chatText");
     if (to && textarea) {
       textarea.value = `${to}\n${textarea.value}`;
+      textarea.dispatchEvent(
+        new Event("input", {
+          bubbles: true,
+        })
+      );
     }
   }
 });
