@@ -21,6 +21,11 @@ document.addEventListener("click", (event) => {
   }
 });
 
+const TARGET_TYPE = Object.freeze({
+  chat: "chat",
+  task: "task",
+});
+
 const initChatSendArea = () => {
   const iconParentNode = document
     .querySelector("#_chatSendArea")
@@ -29,12 +34,18 @@ const initChatSendArea = () => {
     if (
       iconParentNode.lastChild.querySelector("button")?.id !== "__tag_hr_chat"
     ) {
-      iconParentNode.appendChild(createInfoNode(iconParentNode, "chat"));
       iconParentNode.appendChild(
-        createInfoWithTitleNode(iconParentNode, "chat")
+        createInfoNode(iconParentNode, TARGET_TYPE.chat)
       );
-      iconParentNode.appendChild(createCodeNode(iconParentNode, "chat"));
-      iconParentNode.appendChild(createHrNode(iconParentNode, "chat"));
+      iconParentNode.appendChild(
+        createInfoWithTitleNode(iconParentNode, TARGET_TYPE.chat)
+      );
+      iconParentNode.appendChild(
+        createCodeNode(iconParentNode, TARGET_TYPE.chat)
+      );
+      iconParentNode.appendChild(
+        createHrNode(iconParentNode, TARGET_TYPE.chat)
+      );
     }
   }
 };
@@ -51,16 +62,24 @@ const initTaskArea = () => {
       iconsNode.setAttribute("id", "__task_icon_node");
       const ul = iconParentNode.cloneNode(false);
       iconsNode.appendChild(ul);
-      iconsNode.firstChild.appendChild(createInfoNode(iconParentNode, "task"));
       iconsNode.firstChild.appendChild(
-        createInfoWithTitleNode(iconParentNode, "task")
+        createInfoNode(iconParentNode, TARGET_TYPE.task)
       );
-      iconsNode.firstChild.appendChild(createCodeNode(iconParentNode, "task"));
-      iconsNode.firstChild.appendChild(createHrNode(iconParentNode, "task"));
       iconsNode.firstChild.appendChild(
-        createPleaseNode(iconParentNode, "task")
+        createInfoWithTitleNode(iconParentNode, TARGET_TYPE.task)
       );
-      iconsNode.firstChild.appendChild(createBowNode(iconParentNode, "task"));
+      iconsNode.firstChild.appendChild(
+        createCodeNode(iconParentNode, TARGET_TYPE.task)
+      );
+      iconsNode.firstChild.appendChild(
+        createHrNode(iconParentNode, TARGET_TYPE.task)
+      );
+      iconsNode.firstChild.appendChild(
+        createPleaseNode(iconParentNode, TARGET_TYPE.task)
+      );
+      iconsNode.firstChild.appendChild(
+        createBowNode(iconParentNode, TARGET_TYPE.task)
+      );
       taskParentNode.firstChild.before(iconsNode);
     }
   }
@@ -105,7 +124,7 @@ const createInfoWithTitleNode = (iconParentNode, targetType) => {
     .querySelector("svg")
     ?.parentNode.replaceChild(svg, node.querySelector("svg"));
   node.addEventListener("mousedown", (_event) => {
-    if (textSelected()) {
+    if (textSelected(targetType)) {
       const startTag = "[info][title][/title]";
       const endTag = "[/info]\n";
       insertTag(startTag, endTag, targetType);
@@ -207,8 +226,11 @@ const htmlStringToNode = (str) => {
   return document.createRange().createContextualFragment(str).firstChild;
 };
 
-const textSelected = () => {
-  const textarea = document.querySelector("#_chatText");
+const textSelected = (targetType) => {
+  const textarea =
+    targetType === TARGET_TYPE.chat
+      ? document.querySelector("#_chatText")
+      : document.querySelector("#_taskInputActive textarea");
   if (textarea) {
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
@@ -220,7 +242,7 @@ const textSelected = () => {
 
 const insertTag = (startTag, endTag, targetType) => {
   const textarea =
-    targetType === "chat"
+    targetType === TARGET_TYPE.chat
       ? document.querySelector("#_chatText")
       : document.querySelector("#_taskInputActive textarea");
   if (textarea) {
