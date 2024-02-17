@@ -1,3 +1,10 @@
+window.addEventListener("load", (event) => {
+  setTimeout(() => {
+    initChatSendArea();
+    initTaskArea();
+  }, 1000);
+});
+
 window.addEventListener("hashchange", (_event) => {
   setTimeout(() => {
     initChatSendArea();
@@ -235,8 +242,3 @@ const insertTag = (startTag, endTag, targetType) => {
     }, 100);
   }
 };
-
-setTimeout(() => {
-  initChatSendArea();
-  initTaskArea();
-}, 1000);
