@@ -5,6 +5,7 @@
   - [info][title]
   - [code]
   - [hr]
+  - frequently used emojis (max 5)
 - Display icon for tags and emoji at task area
   - [info]
   - [info][title]
@@ -13,6 +14,10 @@
   - (please)
   - (bow)
 - Insert To tag on click user icon with Shift key
+
+### 1.2.0
+
+- ✨ Enable to insert frequently used emojis to chat field
 
 ### 1.1.1
 
