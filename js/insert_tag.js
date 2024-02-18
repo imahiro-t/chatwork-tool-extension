@@ -18,6 +18,22 @@ document.addEventListener("click", (event) => {
     "_taskAddArea"
   ) {
     initTaskArea();
+  } else if (
+    event.target.classList.contains("emoticonTooltip__emoticonContainer")
+  ) {
+    const emoji = findEmojiFromImage(event.target.firstChild);
+    if (emoji) {
+      countUpEmoji(emoji);
+    }
+  } else if (
+    event.target.parentNode.classList.contains(
+      "emoticonTooltip__emoticonContainer"
+    )
+  ) {
+    const emoji = findEmojiFromImage(event.target);
+    if (emoji) {
+      countUpEmoji(emoji);
+    }
   }
 });
 
@@ -26,13 +42,68 @@ const TARGET_TYPE = Object.freeze({
   task: "task",
 });
 
+const EMOJI = Object.freeze({
+  smile: ":)",
+  sad: ":(",
+  more_smile: ":D",
+  lucky: "8-)",
+  surprise: ":o",
+  wink: ";)",
+  tears: ";(",
+  sweat: "(sweat)",
+  mumu: ":|",
+  kiss: ":*",
+  tongueout: ":p",
+  blush: "(blush)",
+  wonder: ":^)",
+  snooze: "|-)",
+  love: "(inlove)",
+  grin: "]:)",
+  talk: "(talk)",
+  yawn: "(yawn)",
+  puke: "(puke)",
+  ikemen: "(emo)",
+  otaku: "8-|",
+  ninmari: ":#)",
+  nod: "(nod)",
+  shake: "(shake)",
+  wry_smile: "(^^;)",
+  whew: "(whew)",
+  clap: "(clap)",
+  bow: "(bow)",
+  roger: "(roger)",
+  muscle: "(flex)",
+  dance: "(dance)",
+  komanechi: "(:/)",
+  gogo: "(gogo)",
+  think: "(think)",
+  please: "(please)",
+  quick: "(quick)",
+  anger: "(anger)",
+  devil: "(devil)",
+  lightbulb: "(lightbulb)",
+  star: "(*)",
+  heart: "(h)",
+  flower: "(F)",
+  cracker: "(cracker)",
+  eat: "(eat)",
+  cake: "(^)",
+  coffee: "(coffee)",
+  beer: "(beer)",
+  handshake: "(handshake)",
+  yes: "(y)",
+});
+
 const initChatSendArea = () => {
   const iconParentNode = document
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
   if (iconParentNode) {
     if (
-      iconParentNode.lastChild.querySelector("button")?.id !== "__tag_hr_chat"
+      iconParentNode.childNodes &&
+      Array.from(iconParentNode.childNodes.values).every(
+        (node) => node.querySelector("button")?.id !== "__tag_info_chat"
+      )
     ) {
       iconParentNode.appendChild(
         createInfoNode(iconParentNode, TARGET_TYPE.chat)
@@ -46,6 +117,12 @@ const initChatSendArea = () => {
       iconParentNode.appendChild(
         createHrNode(iconParentNode, TARGET_TYPE.chat)
       );
+      const emojis = sortedEmojis().slice(0, 5);
+      emojis.forEach((emoji) => {
+        iconParentNode.appendChild(
+          createEmojiNode(iconParentNode, TARGET_TYPE.chat, emoji)
+        );
+      });
     }
   }
 };
@@ -75,10 +152,10 @@ const initTaskArea = () => {
         createHrNode(iconParentNode, TARGET_TYPE.task)
       );
       iconsNode.firstChild.appendChild(
-        createPleaseNode(iconParentNode, TARGET_TYPE.task)
+        createEmojiNode(iconParentNode, TARGET_TYPE.task, "please")
       );
       iconsNode.firstChild.appendChild(
-        createBowNode(iconParentNode, TARGET_TYPE.task)
+        createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
       );
       taskParentNode.firstChild.before(iconsNode);
     }
@@ -182,42 +259,30 @@ const createHrNode = (iconParentNode, targetType) => {
   return node;
 };
 
-const createPleaseNode = (iconParentNode, targetType) => {
+const createEmojiNode = (iconParentNode, targetType, emoji) => {
   const image = htmlStringToNode(
-    `<img src="https://assets.chatwork.com/images/emoticon2x/emo_please.gif" alt="(please)" style="width: 16px; height: 16px;">`
+    `<img src="https://assets.chatwork.com/images/emoticon2x/emo_${emoji}.gif" alt="${EMOJI[emoji]}" style="width: 16px; height: 16px;">`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__icon_please_${targetType}`;
-  node.setAttribute("data-tooltip", "(please)");
+  node.setAttribute("data-tooltip", EMOJI[emoji]);
   node.querySelector("button")?.setAttribute("id", id);
-  node.querySelector("button")?.setAttribute("aria-label", "(please)");
+  node.querySelector("button")?.setAttribute("aria-label", EMOJI[emoji]);
   node
     .querySelector("svg")
     ?.parentNode.replaceChild(image, node.querySelector("svg"));
-  node.addEventListener("mousedown", (_event) => {
-    const startTag = "(please)\n";
+  node.addEventListener("mousedown", (event) => {
+    const startTag = EMOJI[emoji];
     const endTag = "";
     insertTag(startTag, endTag, targetType);
-  });
-  return node;
-};
-
-const createBowNode = (iconParentNode, targetType) => {
-  const image = htmlStringToNode(
-    `<img src="https://assets.chatwork.com/images/emoticon2x/emo_bow.gif" alt="(bow)" style="width: 16px; height: 16px;">`
-  );
-  const node = iconParentNode.firstChild.cloneNode(true);
-  const id = `__icon_bow_${targetType}`;
-  node.setAttribute("data-tooltip", "(bow)");
-  node.querySelector("button")?.setAttribute("id", id);
-  node.querySelector("button")?.setAttribute("aria-label", "(bow)");
-  node
-    .querySelector("svg")
-    ?.parentNode.replaceChild(image, node.querySelector("svg"));
-  node.addEventListener("mousedown", (_event) => {
-    const startTag = "(bow)\n";
-    const endTag = "";
-    insertTag(startTag, endTag, targetType);
+    if (targetType === TARGET_TYPE.chat) {
+      countUpEmoji(emoji);
+      if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
+        document
+          .querySelector("[data-testid='timeline_send-message-button']")
+          .click();
+      }
+    }
   });
   return node;
 };
@@ -263,4 +328,25 @@ const insertTag = (startTag, endTag, targetType) => {
       textarea.selectionEnd = selectionEnd + startTag.length;
     }, 100);
   }
+};
+
+const findEmojiFromImage = (image) => {
+  const re = new RegExp("(?<=/emo_).*(?=.gif$)");
+  const res = re.exec(image.src);
+  return res ? res[0] : null;
+};
+
+const countUpEmoji = (emoji) => {
+  const counter = JSON.parse(localStorage.getItem("__emoji_counter") || "{}");
+  counter[emoji] = counter[emoji] ? counter[emoji] + 1 : 1;
+  localStorage.setItem("__emoji_counter", JSON.stringify(counter));
+};
+
+const sortedEmojis = () => {
+  const counter = JSON.parse(localStorage.getItem("__emoji_counter") || "{}");
+  return Object.keys(counter).sort((a, b) => counter[b] - counter[a]);
+};
+
+const isMac = () => {
+  return navigator.userAgent.toLowerCase().includes("mac os");
 };
