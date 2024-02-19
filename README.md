@@ -15,6 +15,10 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.2.1
+
+- 🐛 prevent from creating duplicated node
+
 ### 1.2.0
 
 - ✨ Enable to insert frequently used emojis to chat field
