@@ -101,7 +101,7 @@ const initChatSendArea = () => {
   if (iconParentNode) {
     if (
       iconParentNode.childNodes &&
-      Array.from(iconParentNode.childNodes.values).every(
+      Array.from(iconParentNode.childNodes).every(
         (node) => node.querySelector("button")?.id !== "__tag_info_chat"
       )
     ) {
