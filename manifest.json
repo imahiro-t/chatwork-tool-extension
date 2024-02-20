@@ -9,6 +9,11 @@
       "js": ["/js/insert_tag.js", "/js/insert_to.js"]
     }
   ],
+  "options_ui": {
+    "page": "/setting/options.html",
+    "browser_style": false
+  },
+  "permissions": ["storage"],
   "icons": {
     "128": "icon128.png"
   }

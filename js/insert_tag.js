@@ -19,14 +19,14 @@ document.addEventListener("click", (event) => {
   ) {
     initTaskArea();
   } else if (
-    event.target.classList.contains("emoticonTooltip__emoticonContainer")
+    event.target.classList?.contains("emoticonTooltip__emoticonContainer")
   ) {
     const emoji = findEmojiFromImage(event.target.firstChild);
     if (emoji) {
       countUpEmoji(emoji);
     }
   } else if (
-    event.target.parentNode.classList.contains(
+    event.target.parentNode.classList?.contains(
       "emoticonTooltip__emoticonContainer"
     )
   ) {
@@ -94,6 +94,36 @@ const EMOJI = Object.freeze({
   yes: "(y)",
 });
 
+const customIcons = ["", "", "", "", ""];
+const customTexts = ["", "", "", "", ""];
+
+chrome.storage.sync.get(
+  {
+    icon_1: "",
+    text_1: "",
+    icon_2: "",
+    text_2: "",
+    icon_3: "",
+    text_3: "",
+    icon_4: "",
+    text_4: "",
+    icon_5: "",
+    text_5: "",
+  },
+  (items) => {
+    customIcons[0] = items.icon_1;
+    customTexts[0] = items.text_1;
+    customIcons[1] = items.icon_2;
+    customTexts[1] = items.text_2;
+    customIcons[2] = items.icon_3;
+    customTexts[2] = items.text_3;
+    customIcons[3] = items.icon_4;
+    customTexts[3] = items.text_4;
+    customIcons[4] = items.icon_5;
+    customTexts[4] = items.text_5;
+  }
+);
+
 const initChatSendArea = () => {
   const iconParentNode = document
     .querySelector("#_chatSendArea")
@@ -122,6 +152,19 @@ const initChatSendArea = () => {
         iconParentNode.appendChild(
           createEmojiNode(iconParentNode, TARGET_TYPE.chat, emoji)
         );
+      });
+      customIcons.forEach((customIcon, index) => {
+        const customText = customTexts[index];
+        if (customIcon && customText) {
+          iconParentNode.appendChild(
+            createCustomEmojiNode(
+              iconParentNode,
+              TARGET_TYPE.chat,
+              customIcon,
+              customText
+            )
+          );
+        }
       });
     }
   }
@@ -264,7 +307,7 @@ const createEmojiNode = (iconParentNode, targetType, emoji) => {
     `<img src="https://assets.chatwork.com/images/emoticon2x/emo_${emoji}.gif" alt="${EMOJI[emoji]}" style="width: 16px; height: 16px;">`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
-  const id = `__icon_please_${targetType}`;
+  const id = `__icon_${emoji}_${targetType}`;
   node.setAttribute("data-tooltip", EMOJI[emoji]);
   node.querySelector("button")?.setAttribute("id", id);
   node.querySelector("button")?.setAttribute("aria-label", EMOJI[emoji]);
@@ -277,6 +320,33 @@ const createEmojiNode = (iconParentNode, targetType, emoji) => {
     insertTag(startTag, endTag, targetType);
     if (targetType === TARGET_TYPE.chat) {
       countUpEmoji(emoji);
+      if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
+        document
+          .querySelector("[data-testid='timeline_send-message-button']")
+          .click();
+      }
+    }
+  });
+  return node;
+};
+
+const createCustomEmojiNode = (iconParentNode, targetType, emoji, text) => {
+  const image = htmlStringToNode(
+    `<span style="font-size: 16px; align-self: center;">${emoji}</span>`
+  );
+  const node = iconParentNode.firstChild.cloneNode(true);
+  const id = `__icon_${emoji}_${targetType}`;
+  node.setAttribute("data-tooltip", text);
+  node.querySelector("button")?.setAttribute("id", id);
+  node.querySelector("button")?.setAttribute("aria-label", emoji);
+  node
+    .querySelector("svg")
+    ?.parentNode.replaceChild(image, node.querySelector("svg"));
+  node.addEventListener("mousedown", (event) => {
+    const startTag = text;
+    const endTag = "";
+    insertTag(startTag, endTag, targetType);
+    if (targetType === TARGET_TYPE.chat) {
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
         document
           .querySelector("[data-testid='timeline_send-message-button']")
