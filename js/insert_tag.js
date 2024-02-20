@@ -94,11 +94,13 @@ const EMOJI = Object.freeze({
   yes: "(y)",
 });
 
+let emojiCount = 5;
 const customIcons = ["", "", "", "", ""];
 const customTexts = ["", "", "", "", ""];
 
 chrome.storage.sync.get(
   {
+    emoji_count: "5",
     icon_1: "",
     text_1: "",
     icon_2: "",
@@ -111,6 +113,7 @@ chrome.storage.sync.get(
     text_5: "",
   },
   (items) => {
+    emojiCount = items.emoji_count;
     customIcons[0] = items.icon_1;
     customTexts[0] = items.text_1;
     customIcons[1] = items.icon_2;
@@ -147,7 +150,7 @@ const initChatSendArea = () => {
       iconParentNode.appendChild(
         createHrNode(iconParentNode, TARGET_TYPE.chat)
       );
-      const emojis = sortedEmojis().slice(0, 5);
+      const emojis = sortedEmojis().slice(0, emojiCount);
       emojis.forEach((emoji) => {
         iconParentNode.appendChild(
           createEmojiNode(iconParentNode, TARGET_TYPE.chat, emoji)

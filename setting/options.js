@@ -1,5 +1,6 @@
 // Saves options to chrome.storage
 const saveOptions = () => {
+  const emoji_count = document.getElementById("emoji_count").value;
   const icon_1 = document.getElementById("icon_1").value;
   const text_1 = document.getElementById("text_1").value;
   const icon_2 = document.getElementById("icon_2").value;
@@ -13,6 +14,7 @@ const saveOptions = () => {
 
   chrome.storage.sync.set(
     {
+      emoji_count: emoji_count,
       icon_1: icon_1,
       text_1: text_1,
       icon_2: icon_2,
@@ -40,6 +42,7 @@ const saveOptions = () => {
 const restoreOptions = () => {
   chrome.storage.sync.get(
     {
+      emoji_count: "5",
       icon_1: "",
       text_1: "",
       icon_2: "",
@@ -52,6 +55,7 @@ const restoreOptions = () => {
       text_5: "",
     },
     (items) => {
+      document.getElementById("emoji_count").value = items.emoji_count;
       document.getElementById("icon_1").value = items.icon_1;
       document.getElementById("text_1").value = items.text_1;
       document.getElementById("icon_2").value = items.icon_2;
