@@ -204,7 +204,7 @@ const createInfoWithTitleNode = (iconParentNode, targetType) => {
     if (textSelected(targetType)) {
       const startTag = "[info][title][/title]";
       const endTag = "[/info]\n";
-      insertTag(startTag, endTag, targetType);
+      insertTag(startTag, endTag, targetType, 13);
     } else {
       const startTag = "[info][title]";
       const endTag = "[/title][/info]\n";
@@ -305,7 +305,7 @@ const textSelected = (targetType) => {
   }
 };
 
-const insertTag = (startTag, endTag, targetType) => {
+const insertTag = (startTag, endTag, targetType, cursorPos) => {
   const textarea =
     targetType === TARGET_TYPE.chat
       ? document.querySelector("#_chatText")
@@ -324,8 +324,20 @@ const insertTag = (startTag, endTag, targetType) => {
     );
     setTimeout(() => {
       textarea.focus();
-      textarea.selectionStart = selectionEnd + startTag.length;
-      textarea.selectionEnd = selectionEnd + startTag.length;
+      if (selection.length > 0) {
+        if (cursorPos > -1) {
+          textarea.selectionStart = selectionStart + cursorPos;
+          textarea.selectionEnd = selectionStart + cursorPos;
+        } else {
+          textarea.selectionStart =
+            selectionEnd + startTag.length + endTag.length;
+          textarea.selectionEnd =
+            selectionEnd + startTag.length + endTag.length;
+        }
+      } else {
+        textarea.selectionStart = selectionEnd + startTag.length;
+        textarea.selectionEnd = selectionEnd + startTag.length;
+      }
     }, 100);
   }
 };
