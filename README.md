@@ -5,7 +5,8 @@
   - [info][title]
   - [code]
   - [hr]
-  - frequently used emojis (max 5)
+  - frequently used emojis (max 10)
+  - custom emojis (max 5)
 - Display icon for tags and emoji at task area
   - [info]
   - [info][title]
@@ -14,6 +15,12 @@
   - (please)
   - (bow)
 - Insert To tag on click user icon with Shift key
+
+### 1.3.0
+
+- ✨ Enable to insert custom emojis to chat field
+- 💄 Enable to set max count for frequently used emoji
+- 💄 change cursor position at selected text
 
 ### 1.2.1
 
