@@ -8,13 +8,13 @@ document.addEventListener("mousemove", (event) => {
 
 document.addEventListener("mouseover", (event) => {
   if (event.shiftKey) {
-    replaceToDummy(event.target);
+    replaceToDummy(event.target, event.relatedTarget);
   }
 });
 
 document.addEventListener("mouseout", (event) => {
   if (event.shiftKey) {
-    recoverFromDummy(event.target);
+    recoverFromDummy(event.target, event.relatedTarget);
   }
 });
 
@@ -30,31 +30,41 @@ document.addEventListener("keyup", (event) => {
   }
 });
 
-const replaceToDummy = (eventNode) => {
-  if (eventNode.classList.contains("userIconImage")) {
-    const node = eventNode.closest("button");
-    if (node && !srcNode && !dummyNode) {
-      srcNode = node;
-      dummyNode = srcNode.cloneNode(true);
-      try {
-        node.parentNode.replaceChild(dummyNode, srcNode);
-      } catch (_e) {}
+const replaceToDummy = (eventNode, relatedEventNode) => {
+  if (relatedEventNode && targetNode(relatedEventNode)) {
+    return;
+  }
+  const node = targetNode(eventNode);
+  if (node && !srcNode && !dummyNode) {
+    srcNode = node;
+    dummyNode = srcNode.cloneNode(true);
+    try {
+      node.parentNode.replaceChild(dummyNode, srcNode);
+    } catch (_e) {}
+  }
+};
+
+const recoverFromDummy = (eventNode, relatedEventNode) => {
+  if (relatedEventNode && targetNode(relatedEventNode)) {
+    return;
+  }
+  const node = targetNode(eventNode);
+  if (node && srcNode && dummyNode) {
+    try {
+      node.parentNode.replaceChild(srcNode, dummyNode);
+    } catch (_e) {
+    } finally {
+      srcNode = undefined;
+      dummyNode = undefined;
     }
   }
 };
 
-const recoverFromDummy = (eventNode) => {
+const targetNode = (eventNode) => {
   if (eventNode.classList.contains("userIconImage")) {
-    const node = eventNode.closest("button");
-    if (node && srcNode && dummyNode) {
-      try {
-        node.parentNode.replaceChild(srcNode, dummyNode);
-      } catch (_e) {
-      } finally {
-        srcNode = undefined;
-        dummyNode = undefined;
-      }
-    }
+    return eventNode.closest("button");
+  } else {
+    return null;
   }
 };
 
