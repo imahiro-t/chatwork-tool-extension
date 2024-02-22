@@ -26,7 +26,7 @@ document.addEventListener("click", (event) => {
       countUpEmoji(emoji);
     }
   } else if (
-    event.target.parentNode.classList?.contains(
+    event.target.parentNode?.classList?.contains(
       "emoticonTooltip__emoticonContainer"
     )
   ) {
