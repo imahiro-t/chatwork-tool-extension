@@ -16,6 +16,12 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.4.0
+
+- ✨ Enable to insert custom emojis to task field
+- 💄 Enable to insert text of multi lines for custom emoji
+- ✨ Copy link on Click with Shift
+
 ### 1.3.0
 
 - ✨ Enable to insert custom emojis to chat field
