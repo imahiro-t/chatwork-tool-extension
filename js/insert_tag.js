@@ -339,7 +339,7 @@ const createCustomEmojiNode = (iconParentNode, targetType, emoji, text) => {
   );
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__icon_${emoji}_${targetType}`;
-  node.setAttribute("data-tooltip", text);
+  node.setAttribute("data-tooltip", textWithEllipsis(text));
   node.querySelector("button")?.setAttribute("id", id);
   node.querySelector("button")?.setAttribute("aria-label", emoji);
   node
@@ -434,4 +434,8 @@ const sortedEmojis = () => {
 
 const isMac = () => {
   return navigator.userAgent.toLowerCase().includes("mac os");
+};
+
+const textWithEllipsis = (text) => {
+  return text.length > 20 ? text.substring(0, 20) + "..." : text;
 };
