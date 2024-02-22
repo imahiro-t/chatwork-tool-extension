@@ -4,7 +4,7 @@
     <title>Chatwork Tools Extension Options</title>
   </head>
   <body>
-    <h2>Frequently Used Emoji Count</h2>
+    <h2>Display Count for Frequently Used Emoji</h2>
     <select id="emoji_count">
       <option value="0">0</option>
       <option value="1">1</option>
@@ -18,7 +18,7 @@
       <option value="9">9</option>
       <option value="10">10</option>
     </select>
-    <h2>Custom Emoji</h2>
+    <h2>Custom Emoji for Chat Area</h2>
     <table>
       <thead>
         <tr>
@@ -30,7 +30,7 @@
       <tbody>
         <tr>
           <th scope="row">1</th>
-          <td><input type="text" id="icon_1" size="4" /></td>
+          <td><input type="text" id="icon_1" size="3" /></td>
           <td><textarea id="text_1" rows="1" cols="50"></textarea></td>
         </tr>
         <tr>
@@ -52,6 +52,33 @@
           <th scope="row">5</th>
           <td><input type="text" id="icon_5" size="3" /></td>
           <td><textarea id="text_5" rows="1" cols="50"></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Custom Emoji for Task Area</h2>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">icon</th>
+          <th scope="col">text</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><input type="text" id="task_icon_1" size="3" /></td>
+          <td><textarea id="task_text_1" rows="1" cols="50"></textarea></td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td><input type="text" id="task_icon_2" size="3" /></td>
+          <td><textarea id="task_text_2" rows="1" cols="50"></textarea></td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td><input type="text" id="task_icon_3" size="3" /></td>
+          <td><textarea id="task_text_3" rows="1" cols="50"></textarea></td>
         </tr>
       </tbody>
     </table>

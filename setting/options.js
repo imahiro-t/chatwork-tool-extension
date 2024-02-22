@@ -11,6 +11,12 @@ const saveOptions = () => {
   const text_4 = document.getElementById("text_4").value;
   const icon_5 = document.getElementById("icon_5").value;
   const text_5 = document.getElementById("text_5").value;
+  const task_icon_1 = document.getElementById("task_icon_1").value;
+  const task_text_1 = document.getElementById("task_text_1").value;
+  const task_icon_2 = document.getElementById("task_icon_2").value;
+  const task_text_2 = document.getElementById("task_text_2").value;
+  const task_icon_3 = document.getElementById("task_icon_3").value;
+  const task_text_3 = document.getElementById("task_text_3").value;
 
   chrome.storage.sync.set(
     {
@@ -25,6 +31,12 @@ const saveOptions = () => {
       text_4: text_4,
       icon_5: icon_5,
       text_5: text_5,
+      task_icon_1: task_icon_1,
+      task_text_1: task_text_1,
+      task_icon_2: task_icon_2,
+      task_text_2: task_text_2,
+      task_icon_3: task_icon_3,
+      task_text_3: task_text_3,
     },
     () => {
       // Update status to let user know options were saved.
@@ -53,6 +65,12 @@ const restoreOptions = () => {
       text_4: "",
       icon_5: "",
       text_5: "",
+      task_icon_1: "",
+      task_text_1: "",
+      task_icon_2: "",
+      task_text_2: "",
+      task_icon_3: "",
+      task_text_3: "",
     },
     (items) => {
       document.getElementById("emoji_count").value = items.emoji_count;
@@ -66,6 +84,12 @@ const restoreOptions = () => {
       document.getElementById("text_4").value = items.text_4;
       document.getElementById("icon_5").value = items.icon_5;
       document.getElementById("text_5").value = items.text_5;
+      document.getElementById("task_icon_1").value = items.task_icon_1;
+      document.getElementById("task_text_1").value = items.task_text_1;
+      document.getElementById("task_icon_2").value = items.task_icon_2;
+      document.getElementById("task_text_2").value = items.task_text_2;
+      document.getElementById("task_icon_3").value = items.task_icon_3;
+      document.getElementById("task_text_3").value = items.task_text_3;
     }
   );
 };

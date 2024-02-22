@@ -97,6 +97,8 @@ const EMOJI = Object.freeze({
 let emojiCount = 5;
 const customIcons = ["", "", "", "", ""];
 const customTexts = ["", "", "", "", ""];
+const customTaskIcons = ["", "", ""];
+const customTaskTexts = ["", "", ""];
 
 chrome.storage.sync.get(
   {
@@ -111,6 +113,12 @@ chrome.storage.sync.get(
     text_4: "",
     icon_5: "",
     text_5: "",
+    task_icon_1: "",
+    task_text_1: "",
+    task_icon_2: "",
+    task_text_2: "",
+    task_icon_3: "",
+    task_text_3: "",
   },
   (items) => {
     emojiCount = items.emoji_count;
@@ -124,6 +132,12 @@ chrome.storage.sync.get(
     customTexts[3] = items.text_4;
     customIcons[4] = items.icon_5;
     customTexts[4] = items.text_5;
+    customTaskIcons[0] = items.task_icon_1;
+    customTaskTexts[0] = items.task_text_1;
+    customTaskIcons[1] = items.task_icon_2;
+    customTaskTexts[1] = items.task_text_2;
+    customTaskIcons[2] = items.task_icon_3;
+    customTaskTexts[2] = items.task_text_3;
   }
 );
 
@@ -203,6 +217,19 @@ const initTaskArea = () => {
       iconsNode.firstChild.appendChild(
         createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
       );
+      customTaskIcons.forEach((customIcon, index) => {
+        const customText = customTaskTexts[index];
+        if (customIcon && customText) {
+          iconsNode.firstChild.appendChild(
+            createCustomEmojiNode(
+              iconParentNode,
+              TARGET_TYPE.task,
+              customIcon,
+              customText
+            )
+          );
+        }
+      });
       taskParentNode.firstChild.before(iconsNode);
     }
   }
