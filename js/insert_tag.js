@@ -184,6 +184,7 @@ const initChatSendArea = () => {
         }
       });
     }
+    wrapTextarea(document.querySelector("#_chatText"));
   }
 };
 
@@ -232,7 +233,50 @@ const initTaskArea = () => {
       });
       taskParentNode.firstChild.before(iconsNode);
     }
+    const textarea = document.querySelector("#_taskInputActive textarea");
+    textarea.style.height = "120px";
+    wrapTextarea(textarea);
   }
+};
+
+const wrapTextarea = (textarea) => {
+  const wrapArea = document.createElement("pre");
+  wrapArea.setAttribute("role", "textbox");
+  wrapArea.setAttribute("contenteditable", "true");
+  wrapArea.setAttribute("aria-multiline", "true");
+  wrapArea.setAttribute("aria-labelledby", "txtboxMultilineLabel");
+  wrapArea.setAttribute("aria-required", "true");
+  wrapArea.setAttribute("class", textarea.getAttribute("class"));
+  wrapArea.setAttribute("style", textarea.getAttribute("style"));
+  wrapArea.style.position = "absolute";
+  textarea.parentNode.insertBefore(wrapArea, textarea);
+  textarea.style.color = "transparent";
+  textarea.style.backgroundColor = "transparent";
+  textarea.style.caretColor = window.getComputedStyle(wrapArea).color;
+  textarea.style.position = "relative";
+  textarea.style.zIndex = 1;
+  textarea.parentNode.style.position = "relative";
+  wrapArea.innerHTML = decorateText(textarea.value);
+
+  var mo = new MutationObserver(() => {
+    wrapArea.innerHTML = decorateText(textarea.value);
+    wrapArea.style.height = textarea.style.height;
+  });
+  var config = {
+    attributes: true,
+    childList: true,
+    subtree: true,
+  };
+  mo.observe(textarea, config);
+
+  textarea.addEventListener("input", () => {
+    wrapArea.innerHTML = decorateText(textarea.value);
+    wrapArea.style.height = textarea.style.height;
+    wrapArea.scrollTop = textarea.scrollTop;
+  });
+  textarea.addEventListener("scroll", () => {
+    wrapArea.scrollTop = textarea.scrollTop;
+  });
 };
 
 const createInfoNode = (iconParentNode, targetType) => {
@@ -416,6 +460,7 @@ const insertTag = (startTag, endTag, targetType, cursorPos) => {
     const before = textarea.value.substring(0, selectionStart);
     const selection = textarea.value.substring(selectionStart, selectionEnd);
     const after = textarea.value.substring(selectionEnd, textarea.value.length);
+    const scrollTop = textarea.scrollTop;
     textarea.value = before + startTag + selection + endTag + after;
     textarea.dispatchEvent(
       new Event("input", {
@@ -424,6 +469,7 @@ const insertTag = (startTag, endTag, targetType, cursorPos) => {
     );
     setTimeout(() => {
       textarea.focus();
+      textarea.scrollTop = scrollTop;
       if (selection.length > 0) {
         if (cursorPos > -1) {
           textarea.selectionStart = selectionStart + cursorPos;
@@ -465,4 +511,56 @@ const isMac = () => {
 
 const textWithEllipsis = (text) => {
   return text.length > 20 ? text.substring(0, 20) + "..." : text;
+};
+
+const decorateText = (text) => {
+  return highlightTag(escapeHtml(text + "\n").replaceAll("\n", "<br>"));
+};
+
+const escapeHtml = (text) => {
+  return text.replace(
+    /[&'"<>]/g,
+    (m) =>
+      ({
+        "&": "&amp;",
+        "'": "&apos;",
+        "`": "&#x60;",
+        '"': "&quot;",
+        "<": "&lt;",
+        ">": "&gt;",
+      }[m])
+  );
+};
+
+const highlightTag = (text) => {
+  return text
+    .replace(
+      /\[To:(\d+)\]/g,
+      (m) => `<span style="color: mediumseagreen;">${m}</span>`
+    )
+    .replace(
+      /\[\/?info\]/g,
+      (m) => `<span style="color: mediumvioletred;">${m}</span>`
+    )
+    .replace(
+      /\[\/?title\]/g,
+      (m) => `<span style="color: mediumorchid;">${m}</span>`
+    )
+    .replace(
+      /\[\/?code\]/g,
+      (m) => `<span style="color: cornflowerblue;">${m}</span>`
+    )
+    .replace(/\[hr\]/g, (m) => `<span style="color: turquoise;">${m}</span>`)
+    .replace(
+      /\[\/?(Quote|引用|Trích dẫn)(.*?)\]/g,
+      (m) => `<span style="color: mediumslateblue;">${m}</span>`
+    )
+    .replace(
+      /\[\/?(Reply|返信|回覆|Trả lời)(.*?)\]/g,
+      (m) => `<span style="color: mediumseagreen;">${m}</span>`
+    )
+    .replace(
+      /\[\/?task(.*?)\]/g,
+      (m) => `<span style="color: darkcyan;">${m}</span>`
+    );
 };
