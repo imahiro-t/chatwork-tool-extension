@@ -18,6 +18,8 @@ document.addEventListener("click", (event) => {
     "_taskAddArea"
   ) {
     initTaskArea();
+  } else if (isAddTaskClicked(event.target)) {
+    initTaskArea();
   } else if (
     event.target.classList?.contains("emoticonTooltip__emoticonContainer")
   ) {
@@ -36,6 +38,20 @@ document.addEventListener("click", (event) => {
     }
   }
 });
+
+const isAddTaskClicked = (target) => {
+  let buttonNode;
+  if (target.classList.contains("actionButton")) {
+    buttonNode = target;
+  } else if (target.closest("button")?.classList?.contains("actionButton")) {
+    buttonNode = target.closest("button");
+  }
+  if (!buttonNode) {
+    return false;
+  }
+  const node = buttonNode.firstChild?.firstChild?.firstChild;
+  return node && node.getAttribute("href") === "#icon_task";
+};
 
 const TARGET_TYPE = Object.freeze({
   chat: "chat",
