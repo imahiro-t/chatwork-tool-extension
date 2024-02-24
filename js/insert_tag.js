@@ -1,57 +1,49 @@
-window.addEventListener("load", (event) => {
+window.addEventListener("load", () => {
   setTimeout(() => {
     initChatSendArea();
     initTaskArea();
   }, 1000);
 });
 
-window.addEventListener("hashchange", (_event) => {
+window.addEventListener("hashchange", () => {
   setTimeout(() => {
     initChatSendArea();
     initTaskArea();
   }, 100);
 });
 
-document.addEventListener("click", (event) => {
-  if (
-    event.target.closest("#_taskInputInActive")?.firstChild?.id ===
-    "_taskAddArea"
-  ) {
-    initTaskArea();
-  } else if (isAddTaskClicked(event.target)) {
-    initTaskArea();
-  } else if (
-    event.target.classList?.contains("emoticonTooltip__emoticonContainer")
-  ) {
-    const emoji = findEmojiFromImage(event.target.firstChild);
-    if (emoji) {
-      countUpEmoji(emoji);
+setTimeout(() => {
+  const taskObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.id === "_taskInputActive";
+        });
+      })
+    ) {
+      initTaskArea();
     }
-  } else if (
-    event.target.parentNode?.classList?.contains(
-      "emoticonTooltip__emoticonContainer"
-    )
-  ) {
-    const emoji = findEmojiFromImage(event.target);
-    if (emoji) {
-      countUpEmoji(emoji);
-    }
-  }
-});
+  });
+  taskObserver.observe(document.querySelector("#_roomTask")?.firstChild, {
+    childList: true,
+  });
+}, 1000);
 
-const isAddTaskClicked = (target) => {
-  let buttonNode;
-  if (target.classList.contains("actionButton")) {
-    buttonNode = target;
-  } else if (target.closest("button")?.classList?.contains("actionButton")) {
-    buttonNode = target.closest("button");
-  }
-  if (!buttonNode) {
-    return false;
-  }
-  const node = buttonNode.firstChild?.firstChild?.firstChild;
-  return node && node.getAttribute("href") === "#icon_task";
-};
+document
+  .querySelector("#_emoticonGallery")
+  ?.addEventListener("click", (event) => {
+    if (event.target.nodeName === "LI") {
+      const emoji = findEmojiFromImage(event.target.firstChild);
+      if (emoji) {
+        countUpEmoji(emoji);
+      }
+    } else if (event.target.nodeName === "IMG") {
+      const emoji = findEmojiFromImage(event.target);
+      if (emoji) {
+        countUpEmoji(emoji);
+      }
+    }
+  });
 
 const TARGET_TYPE = Object.freeze({
   chat: "chat",
@@ -200,7 +192,31 @@ const initChatSendArea = () => {
         }
       });
     }
-    wrapTextarea(document.querySelector("#_chatText"));
+    const textarea = document.querySelector("#_chatText");
+    const sendButton = document.querySelector(
+      "[data-testid='timeline_send-message-button']"
+    );
+    if (sendButton) {
+      const observer = new MutationObserver((mutationRecords) => {
+        for (const mutationRecord of mutationRecords) {
+          if (
+            mutationRecord.type === "attributes" &&
+            mutationRecord.attributeName === "disabled" &&
+            mutationRecord.target.disabled
+          ) {
+            textarea.dispatchEvent(
+              new Event("input", {
+                bubbles: true,
+              })
+            );
+          }
+        }
+      });
+      observer.observe(sendButton, {
+        attributes: true,
+      });
+    }
+    wrapTextarea(textarea, TARGET_TYPE.chat);
   }
 };
 
@@ -210,81 +226,85 @@ const initTaskArea = () => {
     ?.querySelector("._showDescription")?.parentNode;
   const taskParentNode = document.querySelector("#_taskInputActive");
   if (iconParentNode && taskParentNode) {
-    if (taskParentNode.firstChild.id !== "__task_icon_node") {
-      const iconsNode = iconParentNode.parentNode?.cloneNode(false);
-      iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
-      iconsNode.setAttribute("id", "__task_icon_node");
-      const ul = iconParentNode.cloneNode(false);
-      iconsNode.appendChild(ul);
-      iconsNode.firstChild.appendChild(
-        createInfoNode(iconParentNode, TARGET_TYPE.task)
-      );
-      iconsNode.firstChild.appendChild(
-        createInfoWithTitleNode(iconParentNode, TARGET_TYPE.task)
-      );
-      iconsNode.firstChild.appendChild(
-        createCodeNode(iconParentNode, TARGET_TYPE.task)
-      );
-      iconsNode.firstChild.appendChild(
-        createHrNode(iconParentNode, TARGET_TYPE.task)
-      );
-      iconsNode.firstChild.appendChild(
-        createEmojiNode(iconParentNode, TARGET_TYPE.task, "please")
-      );
-      iconsNode.firstChild.appendChild(
-        createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
-      );
-      customTaskIcons.forEach((customIcon, index) => {
-        const customText = customTaskTexts[index];
-        if (customIcon && customText) {
-          iconsNode.firstChild.appendChild(
-            createCustomEmojiNode(
-              iconParentNode,
-              TARGET_TYPE.task,
-              customIcon,
-              customText
-            )
-          );
-        }
-      });
-      taskParentNode.firstChild.before(iconsNode);
+    if (taskParentNode.firstChild.id === "__task_icon_node") {
+      taskParentNode.removeChild(taskParentNode.firstChild);
     }
-    const textarea = document.querySelector("#_taskInputActive textarea");
+    const iconsNode = iconParentNode.parentNode?.cloneNode(false);
+    iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
+    iconsNode.setAttribute("id", "__task_icon_node");
+    const ul = iconParentNode.cloneNode(false);
+    iconsNode.appendChild(ul);
+    iconsNode.firstChild.appendChild(
+      createInfoNode(iconParentNode, TARGET_TYPE.task)
+    );
+    iconsNode.firstChild.appendChild(
+      createInfoWithTitleNode(iconParentNode, TARGET_TYPE.task)
+    );
+    iconsNode.firstChild.appendChild(
+      createCodeNode(iconParentNode, TARGET_TYPE.task)
+    );
+    iconsNode.firstChild.appendChild(
+      createHrNode(iconParentNode, TARGET_TYPE.task)
+    );
+    iconsNode.firstChild.appendChild(
+      createEmojiNode(iconParentNode, TARGET_TYPE.task, "please")
+    );
+    iconsNode.firstChild.appendChild(
+      createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
+    );
+    customTaskIcons.forEach((customIcon, index) => {
+      const customText = customTaskTexts[index];
+      if (customIcon && customText) {
+        iconsNode.firstChild.appendChild(
+          createCustomEmojiNode(
+            iconParentNode,
+            TARGET_TYPE.task,
+            customIcon,
+            customText
+          )
+        );
+      }
+    });
+    taskParentNode.firstChild.before(iconsNode);
+    const textarea = taskParentNode.querySelector("textarea");
     textarea.style.height = "120px";
-    wrapTextarea(textarea);
+    textarea.style.overflowY = "auto";
+    wrapTextarea(textarea, TARGET_TYPE.task);
   }
 };
 
-const wrapTextarea = (textarea) => {
-  const wrapArea = document.createElement("pre");
-  wrapArea.setAttribute("role", "textbox");
-  wrapArea.setAttribute("contenteditable", "true");
-  wrapArea.setAttribute("aria-multiline", "true");
-  wrapArea.setAttribute("aria-labelledby", "txtboxMultilineLabel");
-  wrapArea.setAttribute("aria-required", "true");
-  wrapArea.setAttribute("class", textarea.getAttribute("class"));
-  wrapArea.setAttribute("style", textarea.getAttribute("style"));
-  wrapArea.style.position = "absolute";
+const wrapTextarea = (textarea, targetType) => {
+  let wrapArea;
+  if (textarea.parentNode.firstChild.id !== `__wrap_area_${targetType}`) {
+    wrapArea = document.createElement("pre");
+    wrapArea.setAttribute("id", `__wrap_area_${targetType}`);
+    wrapArea.setAttribute("role", "textbox");
+    wrapArea.setAttribute("contenteditable", "true");
+    wrapArea.setAttribute("aria-multiline", "true");
+    wrapArea.setAttribute("aria-labelledby", "txtboxMultilineLabel");
+    wrapArea.setAttribute("aria-readonly", "true");
+    wrapArea.setAttribute("class", textarea.getAttribute("class"));
+    wrapArea.setAttribute("style", textarea.getAttribute("style"));
+    wrapArea.style.position = "absolute";
+  } else {
+    wrapArea = textarea.parentNode.firstChild;
+  }
+  textarea.parentNode.style.position = "relative";
   textarea.parentNode.insertBefore(wrapArea, textarea);
   textarea.style.color = "transparent";
   textarea.style.backgroundColor = "transparent";
   textarea.style.caretColor = window.getComputedStyle(wrapArea).color;
   textarea.style.position = "relative";
   textarea.style.zIndex = 1;
-  textarea.parentNode.style.position = "relative";
-  wrapArea.innerHTML = decorateText(textarea.value);
-
-  var mo = new MutationObserver(() => {
+  const observer = new MutationObserver(() => {
     wrapArea.innerHTML = decorateText(textarea.value);
     wrapArea.style.height = textarea.style.height;
+    wrapArea.scrollTop = textarea.scrollTop;
   });
-  var config = {
-    attributes: true,
+  observer.observe(textarea, {
     childList: true,
-    subtree: true,
-  };
-  mo.observe(textarea, config);
-
+    attributes: true,
+  });
   textarea.addEventListener("input", () => {
     wrapArea.innerHTML = decorateText(textarea.value);
     wrapArea.style.height = textarea.style.height;
@@ -293,6 +313,7 @@ const wrapTextarea = (textarea) => {
   textarea.addEventListener("scroll", () => {
     wrapArea.scrollTop = textarea.scrollTop;
   });
+  wrapArea.innerHTML = decorateText(textarea.value);
 };
 
 const createInfoNode = (iconParentNode, targetType) => {
