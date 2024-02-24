@@ -216,7 +216,246 @@ const initChatSendArea = () => {
         attributes: true,
       });
     }
+    initAtMarkTo(textarea);
     wrapTextarea(textarea, TARGET_TYPE.chat);
+  }
+};
+
+const atMarkData = {
+  processing: false,
+  startPosition: 0,
+  searchWord: "",
+  selectionIndex: 0,
+};
+
+const initAtMarkTo = (textarea) => {
+  const oldNode = document.getElementById("__at_mark_to");
+  if (oldNode) {
+    oldNode.parentNode.removeChild(oldNode);
+    atMarkData.processing = false;
+    atMarkData.startPosition = 0;
+    atMarkData.searchWord = "";
+    atMarkData.selectionIndex = 0;
+  }
+  const to = document.querySelector("#_to");
+  const toList = document.querySelector("#_toList");
+  if (to && toList) {
+    const node = toList.cloneNode(false);
+    node.setAttribute("id", `__at_mark_to`);
+    toList.style.visibility = "collapse";
+    to.click();
+    const ul = toList.querySelector("ul").cloneNode(true);
+    node.appendChild(ul);
+    toList.parentNode.appendChild(node);
+    toList.style.display = "none";
+    toList.style.visibility = "visible";
+
+    const getTargetRect = (textarea) => {
+      const dummy = document.createElement("pre");
+      dummy.setAttribute("role", "textbox");
+      dummy.setAttribute("contenteditable", "true");
+      dummy.setAttribute("aria-multiline", "true");
+      dummy.setAttribute("aria-labelledby", "txtboxMultilineLabel");
+      dummy.setAttribute("aria-readonly", "true");
+      dummy.setAttribute("class", textarea.getAttribute("class"));
+      dummy.setAttribute("style", textarea.getAttribute("style"));
+      dummy.style.position = "absolute";
+      textarea.parentNode.insertBefore(dummy, textarea);
+      dummy.innerHTML = decorateText(textarea.value, TARGET_TYPE.chat);
+      const atMarkSpan = dummy.querySelector("#__at_mark_span");
+      const rect = atMarkSpan.getBoundingClientRect();
+      textarea.parentNode.removeChild(dummy);
+      return rect;
+    };
+
+    const openAtMarkToDialog = (textarea) => {
+      atMarkData.processing = true;
+      atMarkData.startPosition = textarea.selectionStart;
+      atMarkData.searchWord = "";
+      atMarkData.selectionIndex = 0;
+      const targetRect = getTargetRect(textarea);
+      node.style.position = "absolute";
+      node.style.top = targetRect.top - 180 + "px";
+      node.style.left = targetRect.left - 20 + "px";
+      node.style.display = "block";
+      node.style.opacity = 1;
+      ul.scrollTop = 0;
+    };
+
+    const closeAtMarkToDialog = (textarea) => {
+      atMarkData.processing = false;
+      atMarkData.startPosition = 0;
+      atMarkData.searchWord = "";
+      atMarkData.selectionIndex = 0;
+      node.style.display = "none";
+      textarea.dispatchEvent(
+        new Event("input", {
+          bubbles: true,
+        })
+      );
+    };
+
+    const insertTo = (to, textarea) => {
+      if (to) {
+        const before = textarea.value.substring(
+          0,
+          atMarkData.startPosition - 1
+        );
+        const after = textarea.value.substring(
+          atMarkData.startPosition + atMarkData.searchWord.length
+        );
+        textarea.value = `${before}${to}${after}`;
+        textarea.focus();
+        textarea.selectionStart = (before + to).length;
+        textarea.selectionEnd = (before + to).length;
+        closeAtMarkToDialog(textarea);
+      }
+    };
+
+    ul.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const to = findToForAtMark(event.target);
+      insertTo(to, textarea);
+    });
+
+    textarea.addEventListener("click", () => {
+      if (atMarkData.processing) {
+        closeAtMarkToDialog(textarea);
+      }
+    });
+
+    const atMarkToAvailable = (event) => {
+      if (event.data !== "@") return false;
+      if (atMarkData.processing) return false;
+      const cursorPos = event.target.selectionStart;
+      if (cursorPos === 1) return true;
+      const previousWord = event.target.value.substring(
+        cursorPos - 2,
+        cursorPos - 1
+      );
+      if ([" ", "\n"].includes(previousWord)) return true;
+      return false;
+    };
+
+    const filterAtMarkTo = (searchWord) => {
+      ul.childNodes.forEach((node) => {
+        const name = node.querySelector("p")?.textContent;
+        if (name && (searchWord === "" || name.includes(searchWord))) {
+          node.style.display = "flex";
+        } else {
+          node.style.display = "none";
+        }
+      });
+      atMarkData.selectionIndex = 0;
+      highlightSelection();
+    };
+
+    const getSelectedNode = () => {
+      return Array.from(ul.childNodes).find(
+        (node) =>
+          node.style.display === "flex" &&
+          node.style.backgroundColor !== "transparent"
+      );
+    };
+
+    const highlightSelection = () => {
+      let currentIndex = 0;
+      ul.childNodes.forEach((node) => {
+        if (node.style.display === "flex") {
+          if (atMarkData.selectionIndex === currentIndex) {
+            if (isDark()) {
+              node.style.backgroundColor = "rgba(41, 75, 114, 0.5)";
+            } else {
+              node.style.backgroundColor = "rgba(204, 223, 245, 0.5)";
+            }
+          } else {
+            node.style.backgroundColor = "transparent";
+          }
+          currentIndex++;
+        }
+      });
+    };
+
+    const selectAbove = () => {
+      if (atMarkData.selectionIndex > 0) {
+        atMarkData.selectionIndex = atMarkData.selectionIndex - 1;
+        ul.scrollBy({
+          top: -34,
+          left: 0,
+          behavior: "smooth",
+        });
+        highlightSelection();
+      }
+    };
+
+    const selectBelow = () => {
+      let counter = 0;
+      ul.childNodes.forEach((node) => {
+        if (node.style.display === "flex") {
+          counter++;
+        }
+      });
+      if (atMarkData.selectionIndex < counter - 1) {
+        atMarkData.selectionIndex = atMarkData.selectionIndex + 1;
+        ul.scrollBy({
+          top: 34,
+          left: 0,
+          behavior: "smooth",
+        });
+        highlightSelection();
+      }
+    };
+
+    textarea.addEventListener("input", (event) => {
+      if (atMarkToAvailable(event)) {
+        openAtMarkToDialog(textarea);
+        filterAtMarkTo(atMarkData.searchWord);
+      } else if (atMarkData.processing) {
+        if (atMarkData.startPosition - 1 === textarea.selectionStart) {
+          closeAtMarkToDialog(textarea);
+        } else {
+          atMarkData.searchWord = textarea.value.substring(
+            atMarkData.startPosition,
+            textarea.selectionStart
+          );
+          filterAtMarkTo(atMarkData.searchWord);
+        }
+      }
+    });
+
+    textarea.addEventListener("keydown", (event) => {
+      if (atMarkData.processing) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          const to = findToForAtMark(getSelectedNode());
+          insertTo(to, textarea);
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          closeAtMarkToDialog(textarea);
+          setTimeout(() => {
+            textarea.focus();
+          }, 100);
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault();
+          selectBelow();
+        } else if (event.key === "ArrowLeft") {
+          event.preventDefault();
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          selectAbove();
+        } else if (event.key === "End") {
+          event.preventDefault();
+        } else if (event.key === "Home") {
+          event.preventDefault();
+        } else if (event.key === "PageDown") {
+          event.preventDefault();
+        } else if (event.key === "PageUp") {
+          event.preventDefault();
+        }
+      }
+    });
   }
 };
 
@@ -297,7 +536,7 @@ const wrapTextarea = (textarea, targetType) => {
   textarea.style.position = "relative";
   textarea.style.zIndex = 1;
   const observer = new MutationObserver(() => {
-    wrapArea.innerHTML = decorateText(textarea.value);
+    wrapArea.innerHTML = decorateText(textarea.value, targetType);
     wrapArea.style.height = textarea.style.height;
     wrapArea.scrollTop = textarea.scrollTop;
   });
@@ -306,14 +545,14 @@ const wrapTextarea = (textarea, targetType) => {
     attributes: true,
   });
   textarea.addEventListener("input", () => {
-    wrapArea.innerHTML = decorateText(textarea.value);
+    wrapArea.innerHTML = decorateText(textarea.value, targetType);
     wrapArea.style.height = textarea.style.height;
     wrapArea.scrollTop = textarea.scrollTop;
   });
   textarea.addEventListener("scroll", () => {
     wrapArea.scrollTop = textarea.scrollTop;
   });
-  wrapArea.innerHTML = decorateText(textarea.value);
+  wrapArea.innerHTML = decorateText(textarea.value, targetType);
 };
 
 const createInfoNode = (iconParentNode, targetType) => {
@@ -550,8 +789,23 @@ const textWithEllipsis = (text) => {
   return text.length > 20 ? text.substring(0, 20) + "..." : text;
 };
 
-const decorateText = (text) => {
-  return highlightTag(escapeHtml(text + "\n").replaceAll("\n", "<br>"));
+const decorateText = (text, targetType) => {
+  let atMarkTransformedText = text;
+  if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
+    const before = text.substring(0, atMarkData.startPosition - 1);
+    const target = text.substring(
+      atMarkData.startPosition - 1,
+      atMarkData.startPosition + atMarkData.searchWord.length
+    );
+    const after = text.substring(
+      atMarkData.startPosition + atMarkData.searchWord.length
+    );
+    atMarkTransformedText = `${before}<<<${target}>>>${after}`;
+  }
+  return highlightTag(
+    escapeHtml(atMarkTransformedText + "\n").replaceAll("\n", "<br>"),
+    targetType
+  );
 };
 
 const escapeHtml = (text) => {
@@ -569,8 +823,19 @@ const escapeHtml = (text) => {
   );
 };
 
-const highlightTag = (text) => {
-  return text
+const highlightTag = (text, targetType) => {
+  let atMarkTransformedText = text;
+  if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
+    const atMarkTo = escapeHtml(`<<<@${atMarkData.searchWord}>>>`);
+    atMarkTransformedText = text.replace(
+      atMarkTo,
+      `<span id="__at_mark_span" style="color: royalblue;">@${escapeHtml(
+        atMarkData.searchWord
+      )}</span>`
+    );
+  }
+
+  return atMarkTransformedText
     .replace(
       /\[To:(\d+)\]/g,
       (m) => `<span style="color: mediumseagreen;">${m}</span>`
@@ -600,4 +865,33 @@ const highlightTag = (text) => {
       /\[\/?task(.*?)\]/g,
       (m) => `<span style="color: darkcyan;">${m}</span>`
     );
+};
+
+const findToForAtMark = (node) => {
+  if (node) {
+    if (node.nodeName === "LI") {
+      return findToForAtMarkFromLi(node);
+    } else {
+      return findToForAtMarkFromLi(node.closest("li"));
+    }
+  } else {
+    return null;
+  }
+};
+
+const findToForAtMarkFromLi = (node) => {
+  if (node.querySelector(".toSelectorTooltip__toAllIconContainer")) {
+    return "[toall]";
+  }
+  const aid = node.querySelector("img")?.getAttribute("data-aid");
+  const name = node.querySelector("p")?.textContent;
+  if (aid && name) {
+    return `[To:${aid}]${name}`;
+  } else {
+    return null;
+  }
+};
+
+const isDark = () => {
+  return document.querySelector("body").classList.contains("dark");
 };
