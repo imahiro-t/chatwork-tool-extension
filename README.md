@@ -16,6 +16,12 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.5.0
+
+- ✨ Enable to select To address with @ operation
+- ✨ Decorate message for easy tag identification
+- 💄 show emoji menu in message to task
+
 ### 1.4.0
 
 - ✨ Enable to insert custom emojis to task field
