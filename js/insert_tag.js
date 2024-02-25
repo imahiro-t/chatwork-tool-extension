@@ -863,18 +863,22 @@ const escapeHtml = (text) => {
 };
 
 const highlightTag = (text, targetType) => {
-  let atMarkTransformedText = text;
+  let transformedText = text;
   if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
     const atMarkTo = escapeHtml(`<<<@${atMarkData.searchWord}>>>`);
-    atMarkTransformedText = text.replace(
+    transformedText = text.replace(
       atMarkTo,
       `<span id="__at_mark_span" style="color: royalblue;">@${escapeHtml(
         atMarkData.searchWord
       )}</span>`
     );
   }
+  transformedText = Object.values(EMOJI).reduce(
+    (acc, m) => acc.replaceAll(m, `<span style="color: tomato;">${m}</span>`),
+    transformedText
+  );
 
-  return atMarkTransformedText
+  return transformedText
     .replace(
       /\[To:(\d+)\]/g,
       (m) => `<span style="color: mediumseagreen;">${m}</span>`
