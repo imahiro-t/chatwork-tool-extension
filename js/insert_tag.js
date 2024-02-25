@@ -1,5 +1,6 @@
 window.addEventListener("load", () => {
   setTimeout(() => {
+    initContacts();
     initChatSendArea();
     initTaskArea();
   }, 1000);
@@ -148,6 +149,33 @@ chrome.storage.sync.get(
     customTaskTexts[2] = items.task_text_3;
   }
 );
+
+let contactMap = {};
+
+const initContacts = () => {
+  const getBy = (key) => {
+    return Array.from(document.querySelectorAll("script"))
+      .filter((x) => x.innerText !== undefined)
+      .find((x) => x.innerText.includes(key))
+      .innerText.split("\n")
+      .find((x) => x.includes(key))
+      .split("=")[1]
+      .replaceAll("'", "")
+      .replaceAll(";", "")
+      .trim();
+  };
+  const token = getBy("ACCESS_TOKEN");
+  const myid = getBy("MYID");
+  chrome.runtime
+    .sendMessage({
+      host: location.host,
+      myid: myid,
+      token: token,
+    })
+    .then((res) => {
+      contactMap = JSON.parse(res.result)["result"]["contact_dat"];
+    });
+};
 
 const initChatSendArea = () => {
   const iconParentNode = document
@@ -339,8 +367,19 @@ const initAtMarkTo = (textarea) => {
 
     const filterAtMarkTo = (searchWord) => {
       ul.childNodes.forEach((node) => {
-        const name = node.querySelector("p")?.textContent;
-        if (name && (searchWord === "" || name.includes(searchWord))) {
+        const s = searchWord.toLowerCase();
+        const dispName = node.querySelector("p")?.textContent.toLowerCase();
+        const aid = node.querySelector("img")?.getAttribute("data-aid");
+        const name = aid ? contactMap[aid]["name"].toLowerCase() : "";
+        const nm = aid ? contactMap[aid]["nm"].toLowerCase() : "";
+        const cwid = aid ? contactMap[aid]["cwid"].toLowerCase() : "";
+        if (
+          s === "" ||
+          dispName.includes(s) ||
+          name.includes(s) ||
+          nm.includes(s) ||
+          cwid.includes(s)
+        ) {
           node.style.display = "flex";
         } else {
           node.style.display = "none";
