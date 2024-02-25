@@ -388,6 +388,7 @@ const initAtMarkTo = (textarea) => {
         }
       });
       atMarkData.selectionIndex = 0;
+      ul.scrollTop = 0;
       highlightSelection();
     };
 
