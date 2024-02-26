@@ -16,6 +16,12 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.5.1
+
+- ✨ Enable to set custom message to each room
+- 💄 Improve filter To condition
+- 💄 decorate emoji tag
+
 ### 1.5.0
 
 - ✨ Enable to select To address with @ operation
