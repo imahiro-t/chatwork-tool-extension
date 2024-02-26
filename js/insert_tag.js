@@ -104,14 +104,24 @@ const EMOJI = Object.freeze({
 });
 
 let emojiCount = 5;
-const customIcons = ["", "", "", "", ""];
-const customTexts = ["", "", "", "", ""];
-const customTaskIcons = ["", "", ""];
-const customTaskTexts = ["", "", ""];
+const customChatIcons = ["", "", "", "", "", "", "", "", "", ""];
+const customChatMessages = ["", "", "", "", "", "", "", "", "", ""];
+const customChatRoomIds = ["", "", "", "", "", "", "", "", "", ""];
+const customTaskIcons = ["", "", "", "", "", "", "", "", "", ""];
+const customTaskMessages = ["", "", "", "", "", "", "", "", "", ""];
+const customTaskRoomIds = ["", "", "", "", "", "", "", "", "", ""];
 
 chrome.storage.sync.get(
   {
     emoji_count: "5",
+    chat_icons: ["", "", "", "", "", "", "", "", "", ""],
+    chat_messages: ["", "", "", "", "", "", "", "", "", ""],
+    chat_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+    task_icons: ["", "", "", "", "", "", "", "", "", ""],
+    task_messages: ["", "", "", "", "", "", "", "", "", ""],
+    task_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+    // TODO: remove next version
+    // ---------- from ----------
     icon_1: "",
     text_1: "",
     icon_2: "",
@@ -128,25 +138,43 @@ chrome.storage.sync.get(
     task_text_2: "",
     task_icon_3: "",
     task_text_3: "",
+    // ---------- to ----------
   },
   (items) => {
     emojiCount = items.emoji_count;
-    customIcons[0] = items.icon_1;
-    customTexts[0] = items.text_1;
-    customIcons[1] = items.icon_2;
-    customTexts[1] = items.text_2;
-    customIcons[2] = items.icon_3;
-    customTexts[2] = items.text_3;
-    customIcons[3] = items.icon_4;
-    customTexts[3] = items.text_4;
-    customIcons[4] = items.icon_5;
-    customTexts[4] = items.text_5;
-    customTaskIcons[0] = items.task_icon_1;
-    customTaskTexts[0] = items.task_text_1;
-    customTaskIcons[1] = items.task_icon_2;
-    customTaskTexts[1] = items.task_text_2;
-    customTaskIcons[2] = items.task_icon_3;
-    customTaskTexts[2] = items.task_text_3;
+    for (i = 0; i < 10; i++) {
+      customChatIcons[i] = items.chat_icons[i];
+      customChatMessages[i] = items.chat_messages[i];
+      customChatRoomIds[i] = items.chat_room_ids[i];
+    }
+    for (i = 0; i < 10; i++) {
+      customTaskIcons[i] = items.task_icons[i];
+      customTaskMessages[i] = items.task_messages[i];
+      customTaskRoomIds[i] = items.task_room_ids[i];
+    }
+    // TODO: remove next version
+    // ---------- from ----------
+    if (items.icon_1.length > 0) {
+      customChatIcons[0] = items.icon_1;
+      customChatMessages[0] = items.text_1;
+      customChatIcons[1] = items.icon_2;
+      customChatMessages[1] = items.text_2;
+      customChatIcons[2] = items.icon_3;
+      customChatMessages[2] = items.text_3;
+      customChatIcons[3] = items.icon_4;
+      customChatMessages[3] = items.text_4;
+      customChatIcons[4] = items.icon_5;
+      customChatMessages[4] = items.text_5;
+    }
+    if (items.task_icon_1.length > 0) {
+      customTaskIcons[0] = items.task_icon_1;
+      customTaskMessages[0] = items.task_text_1;
+      customTaskIcons[1] = items.task_icon_2;
+      customTaskMessages[1] = items.task_text_2;
+      customTaskIcons[2] = items.task_icon_3;
+      customTaskMessages[2] = items.task_text_3;
+    }
+    // ---------- to ----------
   }
 );
 
@@ -178,6 +206,7 @@ const initContacts = () => {
 };
 
 const initChatSendArea = () => {
+  const roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
   const iconParentNode = document
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
@@ -206,15 +235,20 @@ const initChatSendArea = () => {
           createEmojiNode(iconParentNode, TARGET_TYPE.chat, emoji)
         );
       });
-      customIcons.forEach((customIcon, index) => {
-        const customText = customTexts[index];
-        if (customIcon && customText) {
+      customChatIcons.forEach((customIcon, index) => {
+        const customMessage = customChatMessages[index];
+        const customRoomIds = customChatRoomIds[index].split("\n");
+        if (
+          customIcon &&
+          customMessage &&
+          (customRoomIds[0] === "" || customRoomIds.includes(roomId))
+        ) {
           iconParentNode.appendChild(
             createCustomEmojiNode(
               iconParentNode,
               TARGET_TYPE.chat,
               customIcon,
-              customText
+              customMessage
             )
           );
         }
@@ -502,6 +536,7 @@ const initAtMarkTo = (textarea) => {
 };
 
 const initTaskArea = () => {
+  const roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
   const iconParentNode = document
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
@@ -534,14 +569,19 @@ const initTaskArea = () => {
       createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
     );
     customTaskIcons.forEach((customIcon, index) => {
-      const customText = customTaskTexts[index];
-      if (customIcon && customText) {
+      const customMessage = customTaskMessages[index];
+      const customRoomIds = customTaskRoomIds[index].split("\n");
+      if (
+        customIcon &&
+        customMessage &&
+        (customRoomIds[0] === "" || customRoomIds.includes(roomId))
+      ) {
         iconsNode.firstChild.appendChild(
           createCustomEmojiNode(
             iconParentNode,
             TARGET_TYPE.task,
             customIcon,
-            customText
+            customMessage
           )
         );
       }
