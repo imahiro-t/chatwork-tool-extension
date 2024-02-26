@@ -52,12 +52,10 @@ const TARGET_TYPE = Object.freeze({
 });
 
 const EMOJI = Object.freeze({
-  smile: ":)",
   sad: ":(",
   more_smile: ":D",
   lucky: "8-)",
   surprise: ":o",
-  wink: ";)",
   tears: ";(",
   sweat: "(sweat)",
   mumu: ":|",
@@ -101,6 +99,8 @@ const EMOJI = Object.freeze({
   beer: "(beer)",
   handshake: "(handshake)",
   yes: "(y)",
+  smile: ":)",
+  wink: ";)",
 });
 
 let emojiCount = 5;
@@ -872,7 +872,7 @@ const textWithEllipsis = (text) => {
 };
 
 const decorateText = (text, targetType) => {
-  let atMarkTransformedText = text;
+  let transformedText = text;
   if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
     const before = text.substring(0, atMarkData.startPosition - 1);
     const target = text.substring(
@@ -882,10 +882,14 @@ const decorateText = (text, targetType) => {
     const after = text.substring(
       atMarkData.startPosition + atMarkData.searchWord.length
     );
-    atMarkTransformedText = `${before}<<<${target}>>>${after}`;
+    transformedText = `${before}<<<${target}>>>${after}`;
   }
+  transformedText = Object.values(EMOJI).reduce(
+    (acc, m) => acc.replaceAll(m, `<-<${m}>->`),
+    transformedText
+  );
   return highlightTag(
-    escapeHtml(atMarkTransformedText + "\n").replaceAll("\n", "<br>"),
+    escapeHtml(transformedText + "\n").replaceAll("\n", "<br>"),
     targetType
   );
 };
@@ -917,7 +921,11 @@ const highlightTag = (text, targetType) => {
     );
   }
   transformedText = Object.values(EMOJI).reduce(
-    (acc, m) => acc.replaceAll(m, `<span style="color: tomato;">${m}</span>`),
+    (acc, m) =>
+      acc.replaceAll(
+        escapeHtml(`<-<${m}>->`),
+        `<span style="color: tomato;">${escapeHtml(m)}</span>`
+      ),
     transformedText
   );
 
