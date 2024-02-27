@@ -1,5 +1,11 @@
+let roomId;
+const resetRoomId = () => {
+  roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
+};
+
 window.addEventListener("load", () => {
   setTimeout(() => {
+    resetRoomId();
     initContacts();
     initChatSendArea();
     initTaskArea();
@@ -8,6 +14,7 @@ window.addEventListener("load", () => {
 
 window.addEventListener("hashchange", () => {
   setTimeout(() => {
+    resetRoomId();
     initChatSendArea();
     initTaskArea();
   }, 100);
@@ -206,7 +213,6 @@ const initContacts = () => {
 };
 
 const initChatSendArea = () => {
-  const roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
   const iconParentNode = document
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
@@ -536,7 +542,6 @@ const initAtMarkTo = (textarea) => {
 };
 
 const initTaskArea = () => {
-  const roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
   const iconParentNode = document
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
