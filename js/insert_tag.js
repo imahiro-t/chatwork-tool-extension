@@ -217,6 +217,7 @@ const initChatSendArea = () => {
     .querySelector("#_chatSendArea")
     ?.querySelector("._showDescription")?.parentNode;
   if (iconParentNode) {
+    const textarea = document.querySelector("#_chatText");
     if (
       iconParentNode.childNodes &&
       Array.from(iconParentNode.childNodes).every(
@@ -224,21 +225,21 @@ const initChatSendArea = () => {
       )
     ) {
       iconParentNode.appendChild(
-        createInfoNode(iconParentNode, TARGET_TYPE.chat)
+        createInfoNode(iconParentNode, textarea, TARGET_TYPE.chat)
       );
       iconParentNode.appendChild(
-        createInfoWithTitleNode(iconParentNode, TARGET_TYPE.chat)
+        createInfoWithTitleNode(iconParentNode, textarea, TARGET_TYPE.chat)
       );
       iconParentNode.appendChild(
-        createCodeNode(iconParentNode, TARGET_TYPE.chat)
+        createCodeNode(iconParentNode, textarea, TARGET_TYPE.chat)
       );
       iconParentNode.appendChild(
-        createHrNode(iconParentNode, TARGET_TYPE.chat)
+        createHrNode(iconParentNode, textarea, TARGET_TYPE.chat)
       );
       const emojis = sortedEmojis().slice(0, emojiCount);
       emojis.forEach((emoji) => {
         iconParentNode.appendChild(
-          createEmojiNode(iconParentNode, TARGET_TYPE.chat, emoji)
+          createEmojiNode(iconParentNode, textarea, TARGET_TYPE.chat, emoji)
         );
       });
       customChatIcons.forEach((customIcon, index) => {
@@ -252,6 +253,7 @@ const initChatSendArea = () => {
           iconParentNode.appendChild(
             createCustomEmojiNode(
               iconParentNode,
+              textarea,
               TARGET_TYPE.chat,
               customIcon,
               customMessage
@@ -260,7 +262,6 @@ const initChatSendArea = () => {
         }
       });
     }
-    const textarea = document.querySelector("#_chatText");
     const sendButton = document.querySelector(
       "[data-testid='timeline_send-message-button']"
     );
@@ -550,28 +551,29 @@ const initTaskArea = () => {
     if (taskParentNode.firstChild.id === "__task_icon_node") {
       taskParentNode.removeChild(taskParentNode.firstChild);
     }
+    const textarea = taskParentNode.querySelector("textarea");
     const iconsNode = iconParentNode.parentNode?.cloneNode(false);
     iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
     iconsNode.setAttribute("id", "__task_icon_node");
     const ul = iconParentNode.cloneNode(false);
     iconsNode.appendChild(ul);
     iconsNode.firstChild.appendChild(
-      createInfoNode(iconParentNode, TARGET_TYPE.task)
+      createInfoNode(iconParentNode, textarea, TARGET_TYPE.task)
     );
     iconsNode.firstChild.appendChild(
-      createInfoWithTitleNode(iconParentNode, TARGET_TYPE.task)
+      createInfoWithTitleNode(iconParentNode, textarea, TARGET_TYPE.task)
     );
     iconsNode.firstChild.appendChild(
-      createCodeNode(iconParentNode, TARGET_TYPE.task)
+      createCodeNode(iconParentNode, textarea, TARGET_TYPE.task)
     );
     iconsNode.firstChild.appendChild(
-      createHrNode(iconParentNode, TARGET_TYPE.task)
+      createHrNode(iconParentNode, textarea, TARGET_TYPE.task)
     );
     iconsNode.firstChild.appendChild(
-      createEmojiNode(iconParentNode, TARGET_TYPE.task, "please")
+      createEmojiNode(iconParentNode, textarea, TARGET_TYPE.task, "please")
     );
     iconsNode.firstChild.appendChild(
-      createEmojiNode(iconParentNode, TARGET_TYPE.task, "bow")
+      createEmojiNode(iconParentNode, textarea, TARGET_TYPE.task, "bow")
     );
     customTaskIcons.forEach((customIcon, index) => {
       const customMessage = customTaskMessages[index];
@@ -584,6 +586,7 @@ const initTaskArea = () => {
         iconsNode.firstChild.appendChild(
           createCustomEmojiNode(
             iconParentNode,
+            textarea,
             TARGET_TYPE.task,
             customIcon,
             customMessage
@@ -592,7 +595,6 @@ const initTaskArea = () => {
       }
     });
     taskParentNode.firstChild.before(iconsNode);
-    const textarea = taskParentNode.querySelector("textarea");
     textarea.style.height = "120px";
     textarea.style.overflowY = "auto";
     wrapTextarea(textarea, TARGET_TYPE.task);
@@ -665,7 +667,7 @@ const createInfoNode = (iconParentNode, targetType) => {
   return node;
 };
 
-const createInfoWithTitleNode = (iconParentNode, targetType) => {
+const createInfoWithTitleNode = (iconParentNode, textarea, targetType) => {
   const svg = htmlStringToNode(
     `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
     <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -684,17 +686,17 @@ const createInfoWithTitleNode = (iconParentNode, targetType) => {
     if (textSelected(targetType)) {
       const startTag = "[info][title][/title]";
       const endTag = "[/info]\n";
-      insertTag(startTag, endTag, targetType, 13);
+      insertTag(startTag, endTag, textarea, 13);
     } else {
       const startTag = "[info][title]";
       const endTag = "[/title][/info]\n";
-      insertTag(startTag, endTag, targetType);
+      insertTag(startTag, endTag, textarea);
     }
   });
   return node;
 };
 
-const createCodeNode = (iconParentNode, targetType) => {
+const createCodeNode = (iconParentNode, textarea, targetType) => {
   const svg = htmlStringToNode(
     `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
     <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -712,12 +714,12 @@ const createCodeNode = (iconParentNode, targetType) => {
   node.addEventListener("mousedown", (_event) => {
     const startTag = "[code]";
     const endTag = "[/code]\n";
-    insertTag(startTag, endTag, targetType);
+    insertTag(startTag, endTag, textarea);
   });
   return node;
 };
 
-const createHrNode = (iconParentNode, targetType) => {
+const createHrNode = (iconParentNode, textarea, targetType) => {
   const svg = htmlStringToNode(
     `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px">
     <path d="M160-440v-80h640v80H160Z" fill-rule="evenodd"/>
@@ -734,12 +736,12 @@ const createHrNode = (iconParentNode, targetType) => {
   node.addEventListener("mousedown", (_event) => {
     const startTag = "[hr]\n";
     const endTag = "";
-    insertTag(startTag, endTag, targetType);
+    insertTag(startTag, endTag, textarea);
   });
   return node;
 };
 
-const createEmojiNode = (iconParentNode, targetType, emoji) => {
+const createEmojiNode = (iconParentNode, textarea, targetType, emoji) => {
   const image = htmlStringToNode(
     `<img src="https://assets.chatwork.com/images/emoticon2x/emo_${emoji}.gif" alt="${EMOJI[emoji]}" style="width: 16px; height: 16px;">`
   );
@@ -754,7 +756,7 @@ const createEmojiNode = (iconParentNode, targetType, emoji) => {
   node.addEventListener("mousedown", (event) => {
     const startTag = EMOJI[emoji];
     const endTag = "";
-    insertTag(startTag, endTag, targetType);
+    insertTag(startTag, endTag, textarea);
     if (targetType === TARGET_TYPE.chat) {
       countUpEmoji(emoji);
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
@@ -767,7 +769,13 @@ const createEmojiNode = (iconParentNode, targetType, emoji) => {
   return node;
 };
 
-const createCustomEmojiNode = (iconParentNode, targetType, emoji, text) => {
+const createCustomEmojiNode = (
+  iconParentNode,
+  textarea,
+  targetType,
+  emoji,
+  text
+) => {
   const image = htmlStringToNode(
     `<span style="font-size: 16px; align-self: center;">${emoji}</span>`
   );
@@ -782,7 +790,7 @@ const createCustomEmojiNode = (iconParentNode, targetType, emoji, text) => {
   node.addEventListener("mousedown", (event) => {
     const startTag = text;
     const endTag = "";
-    insertTag(startTag, endTag, targetType);
+    insertTag(startTag, endTag, textarea);
     if (targetType === TARGET_TYPE.chat) {
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
         document
@@ -812,11 +820,7 @@ const textSelected = (targetType) => {
   }
 };
 
-const insertTag = (startTag, endTag, targetType, cursorPos) => {
-  const textarea =
-    targetType === TARGET_TYPE.chat
-      ? document.querySelector("#_chatText")
-      : document.querySelector("#_taskInputActive textarea");
+const insertTag = (startTag, endTag, textarea, cursorPos) => {
   if (textarea) {
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
