@@ -8,7 +8,7 @@ window.addEventListener("load", () => {
     resetRoomId();
     initContacts();
     initChatSendArea();
-    initTaskArea();
+    initTaskAddArea();
   }, 1000);
 });
 
@@ -16,7 +16,7 @@ window.addEventListener("hashchange", () => {
   setTimeout(() => {
     resetRoomId();
     initChatSendArea();
-    initTaskArea();
+    initTaskAddArea();
   }, 100);
 });
 
@@ -29,33 +29,101 @@ setTimeout(() => {
         });
       })
     ) {
-      initTaskArea();
+      initTaskAddArea();
     }
   });
   taskObserver.observe(document.querySelector("#_roomTask")?.firstChild, {
     childList: true,
   });
-}, 1000);
-
-document
-  .querySelector("#_emoticonGallery")
-  ?.addEventListener("click", (event) => {
-    if (event.target.nodeName === "LI") {
-      const emoji = findEmojiFromImage(event.target.firstChild);
-      if (emoji) {
-        countUpEmoji(emoji);
-      }
-    } else if (event.target.nodeName === "IMG") {
-      const emoji = findEmojiFromImage(event.target);
-      if (emoji) {
-        countUpEmoji(emoji);
-      }
+  const dialogObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.querySelector("#_fileUploadMessage");
+        });
+      })
+    ) {
+      initUploadChatArea();
+    } else if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.querySelector("textarea");
+        });
+      })
+    ) {
+      initTaskEditArea();
     }
   });
+  dialogObserver.observe(document.querySelector("#RootModalsEntryPoint"), {
+    childList: true,
+  });
+  const emojiListObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.querySelector("#emojiList");
+        });
+      })
+    ) {
+      document
+        .querySelector("#emojiList")
+        ?.addEventListener("click", (event) => {
+          if (event.target.nodeName === "LI") {
+            const emoji = findEmojiFromImage(
+              event.target.firstChild.firstChild
+            );
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          } else if (event.target.nodeName === "BUTTON") {
+            const emoji = findEmojiFromImage(event.target.firstChild);
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          } else if (event.target.nodeName === "IMG") {
+            const emoji = findEmojiFromImage(event.target);
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          }
+          const textarea = document.querySelector("#_fileUploadMessage");
+          if (textarea) {
+            setTimeout(() => {
+              textarea.dispatchEvent(
+                new Event("input", {
+                  bubbles: true,
+                })
+              );
+            }, 100);
+          }
+        });
+    }
+  });
+  emojiListObserver.observe(document.querySelector("#_wrapper"), {
+    childList: true,
+  });
+  document
+    .querySelector("#_emoticonGallery")
+    ?.addEventListener("click", (event) => {
+      if (event.target.nodeName === "LI") {
+        const emoji = findEmojiFromImage(event.target.firstChild);
+        if (emoji) {
+          countUpEmoji(emoji);
+        }
+      } else if (event.target.nodeName === "IMG") {
+        const emoji = findEmojiFromImage(event.target);
+        if (emoji) {
+          countUpEmoji(emoji);
+        }
+      }
+    });
+}, 1000);
 
 const TARGET_TYPE = Object.freeze({
   chat: "chat",
-  task: "task",
+  upload_chat: "upload_chat",
+  task_add: "task_add",
+  task_edit: "task_edit",
 });
 
 const EMOJI = Object.freeze({
@@ -212,34 +280,37 @@ const initContacts = () => {
     });
 };
 
-const initChatSendArea = () => {
-  const iconParentNode = document
-    .querySelector("#_chatSendArea")
-    ?.querySelector("._showDescription")?.parentNode;
+const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
   if (iconParentNode) {
-    const textarea = document.querySelector("#_chatText");
     if (
       iconParentNode.childNodes &&
       Array.from(iconParentNode.childNodes).every(
-        (node) => node.querySelector("button")?.id !== "__tag_info_chat"
+        (node) =>
+          node.querySelector("button")?.id !== `__tag_info_${targetType}`
       )
     ) {
       iconParentNode.appendChild(
-        createInfoNode(iconParentNode, textarea, TARGET_TYPE.chat)
+        createInfoNode(iconParentNode, textarea, targetType)
       );
       iconParentNode.appendChild(
-        createInfoWithTitleNode(iconParentNode, textarea, TARGET_TYPE.chat)
+        createInfoWithTitleNode(iconParentNode, textarea, targetType)
       );
       iconParentNode.appendChild(
-        createCodeNode(iconParentNode, textarea, TARGET_TYPE.chat)
+        createCodeNode(iconParentNode, textarea, targetType)
       );
       iconParentNode.appendChild(
-        createHrNode(iconParentNode, textarea, TARGET_TYPE.chat)
+        createHrNode(iconParentNode, textarea, targetType)
       );
       const emojis = sortedEmojis().slice(0, emojiCount);
       emojis.forEach((emoji) => {
         iconParentNode.appendChild(
-          createEmojiNode(iconParentNode, textarea, TARGET_TYPE.chat, emoji)
+          createEmojiNode(
+            iconParentNode,
+            textarea,
+            targetType,
+            emoji,
+            sendButton
+          )
         );
       });
       customChatIcons.forEach((customIcon, index) => {
@@ -254,17 +325,15 @@ const initChatSendArea = () => {
             createCustomEmojiNode(
               iconParentNode,
               textarea,
-              TARGET_TYPE.chat,
+              targetType,
               customIcon,
-              customMessage
+              customMessage,
+              sendButton
             )
           );
         }
       });
     }
-    const sendButton = document.querySelector(
-      "[data-testid='timeline_send-message-button']"
-    );
     if (sendButton) {
       const observer = new MutationObserver((mutationRecords) => {
         for (const mutationRecord of mutationRecords) {
@@ -285,8 +354,40 @@ const initChatSendArea = () => {
         attributes: true,
       });
     }
-    initAtMarkTo(textarea);
-    wrapTextarea(textarea, TARGET_TYPE.chat);
+    initAtMarkTo(textarea, targetType);
+    wrapTextarea(textarea, targetType);
+  }
+};
+
+const initChatSendArea = () => {
+  const iconParentNode = document
+    .querySelector("#_chatSendArea")
+    ?.querySelector("._showDescription")?.parentNode;
+  if (iconParentNode) {
+    const textarea = document.querySelector("#_chatText");
+    const sendButton = document
+      .querySelector("#_chatText")
+      ?.parentNode?.parentNode?.previousSibling?.lastChild?.querySelector(
+        "button"
+      );
+    initChatArea(iconParentNode, textarea, TARGET_TYPE.chat, sendButton);
+  }
+};
+
+const initUploadChatArea = () => {
+  const iconParentNode = document.querySelector("#_fileUploadMessage")
+    ?.parentNode?.previousSibling;
+  if (iconParentNode) {
+    const textarea = document.querySelector("#_fileUploadMessage");
+    const sendButton = document
+      .querySelector("#_fileUploadMessage")
+      ?.parentNode?.parentNode?.parentNode?.parentNode?.lastChild?.querySelector(
+        "button"
+      );
+    textarea.style.height = "104px";
+    textarea.style.overflowY = "auto";
+    textarea.style.padding = "8px";
+    initChatArea(iconParentNode, textarea, TARGET_TYPE.upload_chat, sendButton);
   }
 };
 
@@ -297,7 +398,7 @@ const atMarkData = {
   selectionIndex: 0,
 };
 
-const initAtMarkTo = (textarea) => {
+const initAtMarkTo = (textarea, targetType) => {
   const oldNode = document.getElementById("__at_mark_to");
   if (oldNode) {
     oldNode.parentNode.removeChild(oldNode);
@@ -330,7 +431,7 @@ const initAtMarkTo = (textarea) => {
       dummy.setAttribute("style", textarea.getAttribute("style"));
       dummy.style.position = "absolute";
       textarea.parentNode.insertBefore(dummy, textarea);
-      dummy.innerHTML = decorateText(textarea.value, TARGET_TYPE.chat);
+      dummy.innerHTML = decorateText(textarea.value, targetType);
       const atMarkSpan = dummy.querySelector("#__at_mark_span");
       const rect = atMarkSpan.getBoundingClientRect();
       textarea.parentNode.removeChild(dummy);
@@ -542,38 +643,33 @@ const initAtMarkTo = (textarea) => {
   }
 };
 
-const initTaskArea = () => {
-  const iconParentNode = document
-    .querySelector("#_chatSendArea")
-    ?.querySelector("._showDescription")?.parentNode;
-  const taskParentNode = document.querySelector("#_taskInputActive");
+const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
   if (iconParentNode && taskParentNode) {
-    if (taskParentNode.firstChild.id === "__task_icon_node") {
+    if (taskParentNode.firstChild.id === `__task_icon_node_${targetType}`) {
       taskParentNode.removeChild(taskParentNode.firstChild);
     }
-    const textarea = taskParentNode.querySelector("textarea");
     const iconsNode = iconParentNode.parentNode?.cloneNode(false);
+    iconsNode.setAttribute("id", `__task_icon_node_${targetType}`);
     iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
-    iconsNode.setAttribute("id", "__task_icon_node");
     const ul = iconParentNode.cloneNode(false);
     iconsNode.appendChild(ul);
     iconsNode.firstChild.appendChild(
-      createInfoNode(iconParentNode, textarea, TARGET_TYPE.task)
+      createInfoNode(iconParentNode, textarea, targetType)
     );
     iconsNode.firstChild.appendChild(
-      createInfoWithTitleNode(iconParentNode, textarea, TARGET_TYPE.task)
+      createInfoWithTitleNode(iconParentNode, textarea, targetType)
     );
     iconsNode.firstChild.appendChild(
-      createCodeNode(iconParentNode, textarea, TARGET_TYPE.task)
+      createCodeNode(iconParentNode, textarea, targetType)
     );
     iconsNode.firstChild.appendChild(
-      createHrNode(iconParentNode, textarea, TARGET_TYPE.task)
+      createHrNode(iconParentNode, textarea, targetType)
     );
     iconsNode.firstChild.appendChild(
-      createEmojiNode(iconParentNode, textarea, TARGET_TYPE.task, "please")
+      createEmojiNode(iconParentNode, textarea, targetType, "please")
     );
     iconsNode.firstChild.appendChild(
-      createEmojiNode(iconParentNode, textarea, TARGET_TYPE.task, "bow")
+      createEmojiNode(iconParentNode, textarea, targetType, "bow")
     );
     customTaskIcons.forEach((customIcon, index) => {
       const customMessage = customTaskMessages[index];
@@ -587,7 +683,7 @@ const initTaskArea = () => {
           createCustomEmojiNode(
             iconParentNode,
             textarea,
-            TARGET_TYPE.task,
+            targetType,
             customIcon,
             customMessage
           )
@@ -595,9 +691,45 @@ const initTaskArea = () => {
       }
     });
     taskParentNode.firstChild.before(iconsNode);
+    wrapTextarea(textarea, targetType);
+  }
+};
+
+const initTaskAddArea = () => {
+  const iconParentNode = document
+    .querySelector("#_chatSendArea")
+    ?.querySelector("._showDescription")?.parentNode;
+  const taskParentNode = document.querySelector("#_taskInputActive");
+  if (iconParentNode && taskParentNode) {
+    const textarea = taskParentNode.querySelector("textarea");
     textarea.style.height = "120px";
     textarea.style.overflowY = "auto";
-    wrapTextarea(textarea, TARGET_TYPE.task);
+    initTaskArea(
+      iconParentNode,
+      taskParentNode,
+      textarea,
+      TARGET_TYPE.task_add
+    );
+  }
+};
+
+const initTaskEditArea = () => {
+  const iconParentNode = document
+    .querySelector("#_chatSendArea")
+    ?.querySelector("._showDescription")?.parentNode;
+  const taskParentNode = document
+    .querySelector("#RootModalsEntryPoint")
+    ?.querySelector("textarea")?.parentNode;
+  if (iconParentNode && taskParentNode) {
+    const textarea = taskParentNode.querySelector("textarea");
+    textarea.style.width = "648px";
+    textarea.style.height = "206px";
+    initTaskArea(
+      iconParentNode,
+      taskParentNode,
+      textarea,
+      TARGET_TYPE.task_edit
+    );
   }
 };
 
@@ -644,7 +776,7 @@ const wrapTextarea = (textarea, targetType) => {
   wrapArea.innerHTML = decorateText(textarea.value, targetType);
 };
 
-const createInfoNode = (iconParentNode, targetType) => {
+const createInfoNode = (iconParentNode, textarea, targetType) => {
   const svg = htmlStringToNode(
     `<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 24 24" width="16px" fill-rule="evenodd">
     <rect fill="none" height="24" width="24" x="0"/>
@@ -662,7 +794,7 @@ const createInfoNode = (iconParentNode, targetType) => {
   node.addEventListener("mousedown", (_event) => {
     const startTag = "[info]";
     const endTag = "[/info]\n";
-    insertTag(startTag, endTag, targetType);
+    insertTag(startTag, endTag, textarea);
   });
   return node;
 };
@@ -683,7 +815,7 @@ const createInfoWithTitleNode = (iconParentNode, textarea, targetType) => {
     .querySelector("svg")
     ?.parentNode.replaceChild(svg, node.querySelector("svg"));
   node.addEventListener("mousedown", (_event) => {
-    if (textSelected(targetType)) {
+    if (textSelected(textarea)) {
       const startTag = "[info][title][/title]";
       const endTag = "[/info]\n";
       insertTag(startTag, endTag, textarea, 13);
@@ -741,7 +873,13 @@ const createHrNode = (iconParentNode, textarea, targetType) => {
   return node;
 };
 
-const createEmojiNode = (iconParentNode, textarea, targetType, emoji) => {
+const createEmojiNode = (
+  iconParentNode,
+  textarea,
+  targetType,
+  emoji,
+  sendButton
+) => {
   const image = htmlStringToNode(
     `<img src="https://assets.chatwork.com/images/emoticon2x/emo_${emoji}.gif" alt="${EMOJI[emoji]}" style="width: 16px; height: 16px;">`
   );
@@ -757,12 +895,10 @@ const createEmojiNode = (iconParentNode, textarea, targetType, emoji) => {
     const startTag = EMOJI[emoji];
     const endTag = "";
     insertTag(startTag, endTag, textarea);
-    if (targetType === TARGET_TYPE.chat) {
+    if (sendButton) {
       countUpEmoji(emoji);
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
-        document
-          .querySelector("[data-testid='timeline_send-message-button']")
-          .click();
+        sendButton.click();
       }
     }
   });
@@ -774,7 +910,8 @@ const createCustomEmojiNode = (
   textarea,
   targetType,
   emoji,
-  text
+  text,
+  sendButton
 ) => {
   const image = htmlStringToNode(
     `<span style="font-size: 16px; align-self: center;">${emoji}</span>`
@@ -791,11 +928,9 @@ const createCustomEmojiNode = (
     const startTag = text;
     const endTag = "";
     insertTag(startTag, endTag, textarea);
-    if (targetType === TARGET_TYPE.chat) {
+    if (sendButton) {
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
-        document
-          .querySelector("[data-testid='timeline_send-message-button']")
-          .click();
+        sendButton.click();
       }
     }
   });
@@ -806,11 +941,7 @@ const htmlStringToNode = (str) => {
   return document.createRange().createContextualFragment(str).firstChild;
 };
 
-const textSelected = (targetType) => {
-  const textarea =
-    targetType === TARGET_TYPE.chat
-      ? document.querySelector("#_chatText")
-      : document.querySelector("#_taskInputActive textarea");
+const textSelected = (textarea) => {
   if (textarea) {
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
@@ -882,7 +1013,11 @@ const textWithEllipsis = (text) => {
 
 const decorateText = (text, targetType) => {
   let transformedText = text;
-  if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
+  if (
+    (targetType === TARGET_TYPE.chat ||
+      targetType === TARGET_TYPE.upload_chat) &&
+    atMarkData.processing
+  ) {
     const before = text.substring(0, atMarkData.startPosition - 1);
     const target = text.substring(
       atMarkData.startPosition - 1,
@@ -920,7 +1055,11 @@ const escapeHtml = (text) => {
 
 const highlightTag = (text, targetType) => {
   let transformedText = text;
-  if (targetType === TARGET_TYPE.chat && atMarkData.processing) {
+  if (
+    (targetType === TARGET_TYPE.chat ||
+      targetType === TARGET_TYPE.upload_chat) &&
+    atMarkData.processing
+  ) {
     const atMarkTo = escapeHtml(`<<<@${atMarkData.searchWord}>>>`);
     transformedText = text.replace(
       atMarkTo,
