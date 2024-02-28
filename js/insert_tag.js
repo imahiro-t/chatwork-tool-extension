@@ -178,6 +178,17 @@ const EMOJI = Object.freeze({
   wink: ";)",
 });
 
+const ESCAPE_EMOJIS = [
+  {
+    emoji: "(^^;)",
+    escape_word: "(wry_smile)",
+  },
+  {
+    emoji: "]:)",
+    escape_word: "(grin)",
+  },
+];
+
 let emojiCount = 5;
 const customChatIcons = ["", "", "", "", "", "", "", "", "", ""];
 const customChatMessages = ["", "", "", "", "", "", "", "", "", ""];
@@ -986,6 +997,10 @@ const decorateText = (text, targetType) => {
     );
     transformedText = `${before}<<<${target}>>>${after}`;
   }
+  transformedText = ESCAPE_EMOJIS.reduce(
+    (acc, value) => acc.replaceAll(value.emoji, `<-<${value.escape_word}>->`),
+    transformedText
+  );
   transformedText = Object.values(EMOJI).reduce(
     (acc, m) => acc.replaceAll(m, `<-<${m}>->`),
     transformedText
@@ -1026,6 +1041,14 @@ const highlightTag = (text, targetType) => {
       )}</span>`
     );
   }
+  transformedText = ESCAPE_EMOJIS.reduce(
+    (acc, value) =>
+      acc.replaceAll(
+        escapeHtml(`<-<${value.escape_word}>->`),
+        `<span style="color: tomato;">${escapeHtml(value.emoji)}</span>`
+      ),
+    transformedText
+  );
   transformedText = Object.values(EMOJI).reduce(
     (acc, m) =>
       acc.replaceAll(
