@@ -195,25 +195,6 @@ chrome.storage.sync.get(
     task_icons: ["", "", "", "", "", "", "", "", "", ""],
     task_messages: ["", "", "", "", "", "", "", "", "", ""],
     task_room_ids: ["", "", "", "", "", "", "", "", "", ""],
-    // TODO: remove next version
-    // ---------- from ----------
-    icon_1: "",
-    text_1: "",
-    icon_2: "",
-    text_2: "",
-    icon_3: "",
-    text_3: "",
-    icon_4: "",
-    text_4: "",
-    icon_5: "",
-    text_5: "",
-    task_icon_1: "",
-    task_text_1: "",
-    task_icon_2: "",
-    task_text_2: "",
-    task_icon_3: "",
-    task_text_3: "",
-    // ---------- to ----------
   },
   (items) => {
     emojiCount = items.emoji_count;
@@ -227,29 +208,6 @@ chrome.storage.sync.get(
       customTaskMessages[i] = items.task_messages[i];
       customTaskRoomIds[i] = items.task_room_ids[i];
     }
-    // TODO: remove next version
-    // ---------- from ----------
-    if (items.icon_1.length > 0) {
-      customChatIcons[0] = items.icon_1;
-      customChatMessages[0] = items.text_1;
-      customChatIcons[1] = items.icon_2;
-      customChatMessages[1] = items.text_2;
-      customChatIcons[2] = items.icon_3;
-      customChatMessages[2] = items.text_3;
-      customChatIcons[3] = items.icon_4;
-      customChatMessages[3] = items.text_4;
-      customChatIcons[4] = items.icon_5;
-      customChatMessages[4] = items.text_5;
-    }
-    if (items.task_icon_1.length > 0) {
-      customTaskIcons[0] = items.task_icon_1;
-      customTaskMessages[0] = items.task_text_1;
-      customTaskIcons[1] = items.task_icon_2;
-      customTaskMessages[1] = items.task_text_2;
-      customTaskIcons[2] = items.task_icon_3;
-      customTaskMessages[2] = items.task_text_3;
-    }
-    // ---------- to ----------
   }
 );
 
