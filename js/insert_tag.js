@@ -1100,11 +1100,15 @@ const highlightTag = (text, targetType) => {
       (m) => `<span style="color: mediumslateblue;">${m}</span>`
     )
     .replace(
+      /\[\/?(preview|download)(.*?)\]/g,
+      (m) => `<span style="color: darkcyan;">${m}</span>`
+    )
+    .replace(
       /\[\/?(Reply|返信|回覆|Trả lời)(.*?)\]/g,
       (m) => `<span style="color: mediumseagreen;">${m}</span>`
     )
     .replace(
-      /\[\/?task(.*?)\]/g,
+      /\[\/?(task|dtext)(.*?)\]/g,
       (m) => `<span style="color: darkcyan;">${m}</span>`
     );
 };
