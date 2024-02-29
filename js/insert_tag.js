@@ -1085,15 +1085,15 @@ const highlightTag = (text, targetType) => {
     )
     .replace(/\[hr\]/g, (m) => `<span style="color: turquoise;">${m}</span>`)
     .replace(
-      /\[\/?(Quote|引用|Trích dẫn)(.*?)\]/g,
+      /\[\/?(Quote|引用|Trích dẫn|qt|qtmeta)(.*?)\]/g,
       (m) => `<span style="color: mediumslateblue;">${m}</span>`
     )
     .replace(
-      /\[\/?(preview|download|qt|qtmeta|picon|piconname)(.*?)\]/g,
+      /\[\/?(preview|download|picon|piconname)(.*?)\]/g,
       (m) => `<span style="color: darkcyan;">${m}</span>`
     )
     .replace(
-      /\[\/?(Reply|返信|回覆|Trả lời)(.*?)\]/g,
+      /\[\/?(Reply|返信|回覆|Trả lời|rp)(.*?)\]/g,
       (m) => `<span style="color: mediumseagreen;">${m}</span>`
     )
     .replace(
