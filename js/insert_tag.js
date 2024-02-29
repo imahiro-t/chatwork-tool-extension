@@ -1081,7 +1081,7 @@ const highlightTag = (text, targetType) => {
       (m) => `<span style="color: mediumslateblue;">${m}</span>`
     )
     .replace(
-      /\[\/?(preview|download)(.*?)\]/g,
+      /\[\/?(preview|download|qt|qtmeta|picon|piconname)(.*?)\]/g,
       (m) => `<span style="color: darkcyan;">${m}</span>`
     )
     .replace(
