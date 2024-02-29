@@ -16,6 +16,11 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.5.3
+
+- 💄 add tag for decoration
+- 🐛 fix condition to detect task edit
+
 ### 1.5.2
 
 - 💄 show emoji at task edit area and file upload area
