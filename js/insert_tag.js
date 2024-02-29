@@ -47,7 +47,15 @@ setTimeout(() => {
     } else if (
       mutationRecords.some((mutationRecord) => {
         return Array.from(mutationRecord.addedNodes).some((addedNode) => {
-          return addedNode.querySelector("textarea");
+          return (
+            addedNode.querySelector("textarea") &&
+            [
+              "タスクの編集",
+              "Edit Task",
+              "編輯工作",
+              "Chỉnh sửa công việc",
+            ].includes(addedNode.querySelector("h1")?.textContent)
+          );
         });
       })
     ) {
