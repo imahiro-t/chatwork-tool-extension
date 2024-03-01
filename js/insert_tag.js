@@ -253,7 +253,8 @@ const initContacts = () => {
       token: token,
     })
     .then((res) => {
-      contactMap = JSON.parse(res.result)["result"]["contact_dat"];
+      contactMap = JSON.parse(res.result);
+      console.log(contactMap);
     });
 };
 
