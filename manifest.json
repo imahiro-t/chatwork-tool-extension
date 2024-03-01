@@ -1,7 +1,7 @@
 {
   "name": "Chatwork Tools",
   "description": "Insert tags or emojis from click each icon. Insert To tag with @ operation.",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "manifest_version": 3,
   "content_scripts": [
     {

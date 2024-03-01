@@ -16,6 +16,11 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.5.4
+
+- 💄 add tag for decoration
+- 🐛 fix to get @ mention target
+
 ### 1.5.3
 
 - 💄 add tag for decoration
