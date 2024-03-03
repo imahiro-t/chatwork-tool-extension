@@ -29,7 +29,6 @@ const initAccountsAndTeams = async () => {
       token: token,
     })
     .then((res) => {
-      console.log(1);
       accountMap = JSON.parse(res.result).accounts;
       teamMap = JSON.parse(res.result).teams;
     });
@@ -51,7 +50,6 @@ const resetTeamMembers = async () => {
       token: token,
     })
     .then((res) => {
-      console.log(3);
       teamMemberMap = JSON.parse(res.result);
     });
 };
@@ -60,10 +58,8 @@ window.addEventListener("load", () => {
   setTimeout(() => {
     init();
     initAccountsAndTeams().then(() => {
-      console.log(2);
       resetRoomId();
       resetTeamMembers().then(() => {
-        console.log(4);
         initChatSendArea();
         initTaskAddArea();
       });
@@ -544,6 +540,7 @@ const initAtMarkTo = (textarea, targetType) => {
         const s = searchWord.toLowerCase();
         const dispName = node.querySelector("p")?.textContent.toLowerCase();
         const aid = node.querySelector("img")?.getAttribute("data-aid");
+        const isTeam = !!node.querySelector("svg")?.getAttribute("data-aid");
         const name =
           aid && accountMap[aid]
             ? (accountMap[aid]["name"] ?? "").toLowerCase()
@@ -560,17 +557,25 @@ const initAtMarkTo = (textarea, targetType) => {
           aid && accountMap[aid]
             ? (accountMap[aid]["cwid"] ?? "").toLowerCase()
             : "";
-        if (
-          s === "" ||
-          dispName.includes(s) ||
-          name.includes(s) ||
-          nm.includes(s) ||
-          dp.includes(s) ||
-          cwid.includes(s)
-        ) {
-          node.style.display = "flex";
+        if (isTeam) {
+          if (s === "" || dispName.includes(s) || "team".includes(s)) {
+            node.style.display = "flex";
+          } else {
+            node.style.display = "none";
+          }
         } else {
-          node.style.display = "none";
+          if (
+            s === "" ||
+            dispName.includes(s) ||
+            name.includes(s) ||
+            nm.includes(s) ||
+            dp.includes(s) ||
+            cwid.includes(s)
+          ) {
+            node.style.display = "flex";
+          } else {
+            node.style.display = "none";
+          }
         }
       });
       atMarkData.selectionIndex = 0;
