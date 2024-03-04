@@ -16,6 +16,11 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.6.0
+
+- ✨ Enable to @ mention to team members
+- 📝 change manifest file in Japanese
+
 ### 1.5.4
 
 - 💄 add tag for decoration
