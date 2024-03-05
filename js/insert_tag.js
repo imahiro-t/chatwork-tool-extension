@@ -354,12 +354,12 @@ const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
         const customMessage = customChatMessages[index];
         const customRoomIds = customChatRoomIds[index].split("\n");
         if (
-          customIcon &&
           customMessage &&
           (customRoomIds[0] === "" || customRoomIds.includes(roomId))
         ) {
           iconParentNode.appendChild(
             createCustomEmojiNode(
+              index,
               iconParentNode,
               textarea,
               targetType,
@@ -754,12 +754,12 @@ const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
       const customMessage = customTaskMessages[index];
       const customRoomIds = customTaskRoomIds[index].split("\n");
       if (
-        customIcon &&
         customMessage &&
         (customRoomIds[0] === "" || customRoomIds.includes(roomId))
       ) {
         iconsNode.firstChild.appendChild(
           createCustomEmojiNode(
+            index,
             iconParentNode,
             textarea,
             targetType,
@@ -1042,6 +1042,7 @@ const createEmojiNode = (
 };
 
 const createCustomEmojiNode = (
+  index,
   iconParentNode,
   textarea,
   targetType,
@@ -1049,17 +1050,20 @@ const createCustomEmojiNode = (
   text,
   sendButton
 ) => {
-  const image = htmlStringToNode(
-    `<span style="font-size: 16px; align-self: center;">${emoji}</span>`
+  const iconNode = htmlStringToNode(
+    emoji.length > 0
+      ? `<span style="font-size: 16px; align-self: center;">${emoji}</span>`
+      : `<span style="font-size: 16px; align-self: center;">${DEFAULT_ICONS[index]}</span>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
-  const id = `__icon_${emoji}_${targetType}`;
   node.setAttribute("data-tooltip", textWithEllipsis(text));
-  node.querySelector("button")?.setAttribute("id", id);
-  node.querySelector("button")?.setAttribute("aria-label", emoji);
+  node
+    .querySelector("button")
+    ?.setAttribute("id", `__icon_${index}_${targetType}`);
+  node.querySelector("button")?.setAttribute("aria-label", text);
   node
     .querySelector("svg")
-    ?.parentNode.replaceChild(image, node.querySelector("svg"));
+    ?.parentNode.replaceChild(iconNode, node.querySelector("svg"));
   node.addEventListener("mousedown", (event) => {
     const startTag = text;
     const endTag = "";
