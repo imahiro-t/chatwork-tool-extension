@@ -16,6 +16,12 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.7.0
+
+- ✨ Enable to add task to registered accounts
+- 💄 use default icon for no setting
+- 🐛 fix to show mention over 500
+
 ### 1.6.0
 
 - ✨ Enable to @ mention to team members
