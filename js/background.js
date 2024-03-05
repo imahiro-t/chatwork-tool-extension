@@ -43,6 +43,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
                 result: JSON.stringify({
                   accounts: { ...contacts, ...accounts },
                   teams: teams,
+                  rooms: rooms,
                 }),
               });
             });
