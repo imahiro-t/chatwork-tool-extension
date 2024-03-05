@@ -20,6 +20,7 @@ const init = () => {
 
 let accountMap = {};
 let teamMap = {};
+let roomMap = {};
 const initAccountsAndTeams = async () => {
   return chrome.runtime
     .sendMessage({
@@ -29,8 +30,10 @@ const initAccountsAndTeams = async () => {
       token: token,
     })
     .then((res) => {
-      accountMap = JSON.parse(res.result).accounts;
-      teamMap = JSON.parse(res.result).teams;
+      const result = JSON.parse(res.result);
+      accountMap = result.accounts;
+      teamMap = result.teams;
+      roomMap = result.rooms;
     });
 };
 
@@ -243,7 +246,7 @@ const EMOJI = Object.freeze({
   wink: ";)",
 });
 
-const ESCAPE_EMOJIS = [
+const ESCAPE_EMOJIS = Object.freeze([
   {
     emoji: "(^^;)",
     escape_word: "(wry_smile)",
@@ -252,7 +255,20 @@ const ESCAPE_EMOJIS = [
     emoji: "]:)",
     escape_word: "(grin)",
   },
-];
+]);
+
+const DEFAULT_ICONS = Object.freeze({
+  0: `1️⃣`,
+  1: `2️⃣`,
+  2: `3️⃣`,
+  3: `4️⃣`,
+  4: `5️⃣`,
+  5: `6️⃣`,
+  6: `7️⃣`,
+  7: `8️⃣`,
+  8: `9️⃣`,
+  9: `🔟`,
+});
 
 let emojiCount = 5;
 const customChatIcons = ["", "", "", "", "", "", "", "", "", ""];
@@ -261,6 +277,10 @@ const customChatRoomIds = ["", "", "", "", "", "", "", "", "", ""];
 const customTaskIcons = ["", "", "", "", "", "", "", "", "", ""];
 const customTaskMessages = ["", "", "", "", "", "", "", "", "", ""];
 const customTaskRoomIds = ["", "", "", "", "", "", "", "", "", ""];
+const assignIcons = ["", "", "", "", "", "", "", "", "", ""];
+const assignLabels = ["", "", "", "", "", "", "", "", "", ""];
+const assignMembers = ["", "", "", "", "", "", "", "", "", ""];
+const assignRoomIds = ["", "", "", "", "", "", "", "", "", ""];
 
 chrome.storage.sync.get(
   {
@@ -271,6 +291,10 @@ chrome.storage.sync.get(
     task_icons: ["", "", "", "", "", "", "", "", "", ""],
     task_messages: ["", "", "", "", "", "", "", "", "", ""],
     task_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+    assign_icons: ["", "", "", "", "", "", "", "", "", ""],
+    assign_labels: ["", "", "", "", "", "", "", "", "", ""],
+    assign_members: ["", "", "", "", "", "", "", "", "", ""],
+    assign_room_ids: ["", "", "", "", "", "", "", "", "", ""],
   },
   (items) => {
     emojiCount = items.emoji_count;
@@ -283,6 +307,12 @@ chrome.storage.sync.get(
       customTaskIcons[i] = items.task_icons[i];
       customTaskMessages[i] = items.task_messages[i];
       customTaskRoomIds[i] = items.task_room_ids[i];
+    }
+    for (i = 0; i < 10; i++) {
+      assignIcons[i] = items.assign_icons[i];
+      assignLabels[i] = items.assign_labels[i];
+      assignMembers[i] = items.assign_members[i];
+      assignRoomIds[i] = items.assign_room_ids[i];
     }
   }
 );
@@ -744,6 +774,60 @@ const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
   }
 };
 
+const initTaskAssignArea = (iconParentNode, textarea) => {
+  if (textarea.parentNode.lastChild.id === `__task_assign_node`) {
+    textarea.parentNode.removeChild(textarea.parentNode.lastChild);
+  }
+  const iconsNode = iconParentNode.parentNode?.cloneNode(false);
+  iconsNode.setAttribute("id", `__task_assign_node`);
+  iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
+  const ul = iconParentNode.cloneNode(false);
+  iconsNode.appendChild(ul);
+  assignLabels.forEach((label, index) => {
+    const icon = assignIcons[index];
+    const members = assignMembers[index]
+      .split("\n")
+      .filter((x) => roomMap[roomId].includes(x))
+      .map((x) => Number(x));
+    const roomIds = assignRoomIds[index].split("\n");
+    if (
+      members.length > 0 &&
+      (assignRoomIds[index] === "" || roomIds.includes(roomId))
+    ) {
+      iconsNode.firstChild.appendChild(
+        createAssignIconNode(
+          index,
+          iconParentNode,
+          textarea,
+          label,
+          icon,
+          members
+        )
+      );
+    }
+  });
+  textarea.parentNode.appendChild(iconsNode);
+  const assignTargetNode =
+    textarea.nextSibling?.firstChild?.firstChild?.lastChild;
+  if (assignTargetNode) {
+    const showAssignIconNode = (show) => {
+      iconsNode.style.display = show ? "block" : "none";
+    };
+    const observer = new MutationObserver((mutationRecords) => {
+      showAssignIconNode(
+        mutationRecords.some(
+          (mutationRecord) => mutationRecord.target.textContent === "選択"
+        )
+      );
+    });
+    observer.observe(assignTargetNode, {
+      childList: true,
+      subtree: true,
+    });
+    showAssignIconNode(assignTargetNode.textContent === "選択");
+  }
+};
+
 const initTaskAddArea = () => {
   const iconParentNode = document
     .querySelector("#_chatSendArea")
@@ -759,6 +843,9 @@ const initTaskAddArea = () => {
       textarea,
       TARGET_TYPE.task_add
     );
+    if (language === "ja") {
+      initTaskAssignArea(iconParentNode, textarea);
+    }
   }
 };
 
@@ -981,6 +1068,93 @@ const createCustomEmojiNode = (
       if ((isMac() && event.metaKey) || (!isMac() && event.ctrlKey)) {
         sendButton.click();
       }
+    }
+  });
+  return node;
+};
+
+const getTaskLimit = (text) => {
+  if (text.includes("設定")) {
+    return null;
+  }
+  const result = text
+    .replace("時間指定なし", "00:00")
+    .match(/^(\d+)月(\d+)日(\d+):(\d+)$/);
+  const year = new Date().getFullYear();
+  const month = ("0" + result[1]).slice(-2);
+  const day = ("0" + result[2]).slice(-2);
+  const hour = result[3];
+  const minute = result[4];
+  const date = new Date(
+    `${year}-${month}-${day}T${hour}:${minute}:00.000+09:00`
+  );
+  if (date.getTime() + 60 * 60 * 24 * 7 > new Date().getTime()) {
+    return date.getTime() / 1000;
+  } else {
+    return (
+      new Date(
+        `${year}-${month}-${day}T${hour}:${minute}:00.000+09:00`
+      ).getTime() / 1000
+    );
+  }
+};
+
+const getLimitType = (text) => {
+  if (text.includes("設定")) {
+    return "none";
+  } else if (text.includes("時間指定なし")) {
+    return "date";
+  } else {
+    return "time";
+  }
+};
+
+const createAssignIconNode = (
+  index,
+  iconParentNode,
+  textarea,
+  label,
+  icon,
+  members
+) => {
+  const iconNode = htmlStringToNode(
+    icon.length > 0
+      ? `<span style="align-self: center">${icon}</span>`
+      : `<span style="font-size: 22px; align-self: center; margin-left: -3px">${DEFAULT_ICONS[index]}</span>`
+  );
+  const node = iconParentNode.firstChild.cloneNode(true);
+  node.setAttribute("data-tooltip", textWithEllipsis(label));
+  node.querySelector("button")?.setAttribute("id", `__icon_assign_${index}`);
+  node.querySelector("button")?.setAttribute("aria-label", label);
+  node
+    .querySelector("svg")
+    ?.parentNode.replaceChild(iconNode, node.querySelector("svg"));
+
+  node.addEventListener("mousedown", () => {
+    const task = textarea.value;
+    if (task.length > 0) {
+      const limitText =
+        textarea.nextSibling.lastChild.lastChild.lastChild.textContent;
+      const assign = members;
+      const limit_type = getLimitType(limitText);
+      const task_limit = getTaskLimit(limitText);
+      chrome.runtime
+        .sendMessage({
+          type: "add_task",
+          host: location.host,
+          myid: myid,
+          room_id: roomId,
+          task: task,
+          assign: assign,
+          limit_type: limit_type,
+          task_limit: task_limit,
+          token: token,
+        })
+        .then(() => {
+          textarea.nextSibling.nextSibling.firstChild
+            .querySelector("button")
+            ?.click();
+        });
     }
   });
   return node;

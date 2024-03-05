@@ -29,6 +29,24 @@ const saveOptions = () => {
       ? document.getElementById(`task_room_id_${i + 1}`).value
       : "";
   }
+  const assign_icons = ["", "", "", "", "", "", "", "", "", ""];
+  const assign_labels = ["", "", "", "", "", "", "", "", "", ""];
+  const assign_members = ["", "", "", "", "", "", "", "", "", ""];
+  const assign_room_ids = ["", "", "", "", "", "", "", "", "", ""];
+  for (i = 0; i < 10; i++) {
+    assign_icons[i] = document.getElementById(`assign_icon_${i + 1}`)
+      ? document.getElementById(`assign_icon_${i + 1}`).value
+      : "";
+    assign_labels[i] = document.getElementById(`assign_label_${i + 1}`)
+      ? document.getElementById(`assign_label_${i + 1}`).value
+      : "";
+    assign_members[i] = document.getElementById(`assign_member_${i + 1}`)
+      ? document.getElementById(`assign_member_${i + 1}`).value
+      : "";
+    assign_room_ids[i] = document.getElementById(`assign_room_id_${i + 1}`)
+      ? document.getElementById(`assign_room_id_${i + 1}`).value
+      : "";
+  }
 
   chrome.storage.sync.clear();
   chrome.storage.sync.set(
@@ -40,6 +58,10 @@ const saveOptions = () => {
       task_icons: task_icons,
       task_messages: task_messages,
       task_room_ids: task_room_ids,
+      assign_icons: assign_icons,
+      assign_labels: assign_labels,
+      assign_members: assign_members,
+      assign_room_ids: assign_room_ids,
     },
     () => {
       // Update status to let user know options were saved.
@@ -64,6 +86,10 @@ const restoreOptions = () => {
       task_icons: ["", "", "", "", "", "", "", "", "", ""],
       task_messages: ["", "", "", "", "", "", "", "", "", ""],
       task_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+      assign_icons: ["", "", "", "", "", "", "", "", "", ""],
+      assign_labels: ["", "", "", "", "", "", "", "", "", ""],
+      assign_members: ["", "", "", "", "", "", "", "", "", ""],
+      assign_room_ids: ["", "", "", "", "", "", "", "", "", ""],
     },
     (items) => {
       document.getElementById("emoji_count").value = items.emoji_count;
@@ -82,6 +108,16 @@ const restoreOptions = () => {
           items.task_messages[i];
         document.getElementById(`task_room_id_${i + 1}`).value =
           items.task_room_ids[i];
+      }
+      for (i = 0; i < 10; i++) {
+        document.getElementById(`assign_icon_${i + 1}`).value =
+          items.assign_icons[i];
+        document.getElementById(`assign_label_${i + 1}`).value =
+          items.assign_labels[i];
+        document.getElementById(`assign_member_${i + 1}`).value =
+          items.assign_members[i];
+        document.getElementById(`assign_room_id_${i + 1}`).value =
+          items.assign_room_ids[i];
       }
     }
   );
