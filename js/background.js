@@ -12,7 +12,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
           return acc;
         }, {});
         const rooms = Object.keys(json.result.room_dat).reduce((acc, x) => {
+          console.log(acc, x);
           acc[x] = Object.keys(json.result.room_dat[x]["m"]);
+          console.log(acc);
           return acc;
         }, {});
         const contacts = json.result.contact_dat;
