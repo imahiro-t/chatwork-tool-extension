@@ -34,6 +34,7 @@ const initAccountsAndTeams = async () => {
       accountMap = result.accounts;
       teamMap = result.teams;
       roomMap = result.rooms;
+      console.log(roomMap);
     });
 };
 
