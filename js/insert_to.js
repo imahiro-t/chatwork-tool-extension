@@ -1,6 +1,5 @@
 let mousePositionNode;
 let srcNode;
-let dummyNode;
 
 document.addEventListener("mousemove", (event) => {
   mousePositionNode = event.target;
@@ -35,11 +34,16 @@ const replaceToDummy = (eventNode, relatedEventNode) => {
     return;
   }
   const node = targetNode(eventNode);
-  if (node && !srcNode && !dummyNode) {
+  if (node && !document.querySelector("#__insert_to_tag") && !srcNode) {
     srcNode = node;
-    dummyNode = srcNode.cloneNode(true);
+    const dummyNode = srcNode.cloneNode(true);
+    dummyNode.id = "__insert_to_tag";
+    dummyNode.style.filter = "sepia(0.7)";
     try {
       node.parentNode.replaceChild(dummyNode, srcNode);
+      if (!relatedEventNode) {
+        mousePositionNode = dummyNode;
+      }
     } catch (_e) {}
   }
 };
@@ -49,23 +53,31 @@ const recoverFromDummy = (eventNode, relatedEventNode) => {
     return;
   }
   const node = targetNode(eventNode);
+  const dummyNode = document.querySelector("#__insert_to_tag");
   if (node && srcNode && dummyNode) {
     try {
       node.parentNode.replaceChild(srcNode, dummyNode);
+      if (!relatedEventNode) {
+        mousePositionNode = srcNode;
+      }
     } catch (_e) {
     } finally {
       srcNode = undefined;
-      dummyNode = undefined;
     }
   }
 };
 
 const targetNode = (eventNode) => {
-  if (eventNode.classList.contains("userIconImage")) {
-    return eventNode.closest("button");
-  } else {
-    return null;
+  let buttonNode;
+  if (
+    eventNode.nodeName === "BUTTON" &&
+    eventNode.querySelector(".userIconImage")
+  ) {
+    buttonNode = eventNode;
+  } else if (eventNode.classList.contains("userIconImage")) {
+    buttonNode = eventNode.closest("button");
   }
+  return buttonNode;
 };
 
 document.addEventListener("mousedown", (event) => {
