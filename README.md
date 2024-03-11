@@ -16,6 +16,12 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.7.1
+
+- 🐛 fix to show toall selector
+- 💄 decorate user icon for insert to
+- 💄 decorate copy link icon
+
 ### 1.7.0
 
 - ✨ Enable to add task to registered accounts
