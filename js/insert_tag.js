@@ -454,9 +454,14 @@ const initAtMarkTo = (textarea, targetType) => {
     const ulForClone = toList.querySelector("ul");
     const ul = ulForClone.cloneNode(false);
     node.appendChild(ul);
-    const liForClone = ulForClone.firstChild.nextSibling
-      ? ulForClone.firstChild.nextSibling.cloneNode(true)
-      : ulForClone.firstChild.cloneNode(true);
+    const firstLi = ulForClone.firstChild.cloneNode(true);
+    let liForClone;
+    if (firstLi.querySelector(".toSelectorTooltip__toAllIcon")) {
+      ul.appendChild(firstLi);
+      liForClone = ulForClone.firstChild.nextSibling.cloneNode(true);
+    } else {
+      liForClone = firstLi;
+    }
     roomMap[roomId].forEach((accountId) => {
       const li = liForClone.cloneNode(true);
       li.setAttribute("data-cwui-lt-value", `${accountId}`);
