@@ -1,7 +1,7 @@
 {
   "name": "Chatwork Tools",
   "description": "Chatwork独自タグのハイライト表示、アイコンクリックによる独自タグやよく使うアイコン、カスタムテキストの挿入、@によるメンション機能など",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "manifest_version": 3,
   "content_scripts": [
     {

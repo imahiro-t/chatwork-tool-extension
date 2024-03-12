@@ -16,6 +16,11 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.7.2
+
+- 💄 change default assign icon
+- 💄 layout option settings
+
 ### 1.7.1
 
 - 🐛 fix to show toall selector
