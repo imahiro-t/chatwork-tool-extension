@@ -67,6 +67,8 @@ window.addEventListener("load", () => {
         initTaskAddArea();
       });
     });
+    initObserver();
+    initListener();
   }, 1000);
 });
 
@@ -79,113 +81,6 @@ window.addEventListener("hashchange", () => {
     });
   }, 100);
 });
-
-setTimeout(() => {
-  const taskObserver = new MutationObserver((mutationRecords) => {
-    if (
-      mutationRecords.some((mutationRecord) => {
-        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
-          return addedNode.id === "_taskInputActive";
-        });
-      })
-    ) {
-      initTaskAddArea();
-    }
-  });
-  taskObserver.observe(document.querySelector("#_roomTask")?.firstChild, {
-    childList: true,
-  });
-  const dialogObserver = new MutationObserver((mutationRecords) => {
-    if (
-      mutationRecords.some((mutationRecord) => {
-        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
-          return addedNode.querySelector("#_fileUploadMessage");
-        });
-      })
-    ) {
-      initUploadChatArea();
-    } else if (
-      mutationRecords.some((mutationRecord) => {
-        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
-          return (
-            addedNode.querySelector("textarea") &&
-            [
-              "タスクの編集",
-              "Edit Task",
-              "編輯工作",
-              "Chỉnh sửa công việc",
-            ].includes(addedNode.querySelector("h1")?.textContent)
-          );
-        });
-      })
-    ) {
-      initTaskEditArea();
-    }
-  });
-  dialogObserver.observe(document.querySelector("#RootModalsEntryPoint"), {
-    childList: true,
-  });
-  const emojiListObserver = new MutationObserver((mutationRecords) => {
-    if (
-      mutationRecords.some((mutationRecord) => {
-        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
-          return addedNode.querySelector("#emojiList");
-        });
-      })
-    ) {
-      document
-        .querySelector("#emojiList")
-        ?.addEventListener("click", (event) => {
-          if (event.target.nodeName === "LI") {
-            const emoji = findEmojiFromImage(
-              event.target.firstChild.firstChild
-            );
-            if (emoji) {
-              countUpEmoji(emoji);
-            }
-          } else if (event.target.nodeName === "BUTTON") {
-            const emoji = findEmojiFromImage(event.target.firstChild);
-            if (emoji) {
-              countUpEmoji(emoji);
-            }
-          } else if (event.target.nodeName === "IMG") {
-            const emoji = findEmojiFromImage(event.target);
-            if (emoji) {
-              countUpEmoji(emoji);
-            }
-          }
-          const textarea = document.querySelector("#_fileUploadMessage");
-          if (textarea) {
-            setTimeout(() => {
-              textarea.dispatchEvent(
-                new Event("input", {
-                  bubbles: true,
-                })
-              );
-            }, 100);
-          }
-        });
-    }
-  });
-  emojiListObserver.observe(document.querySelector("#_wrapper"), {
-    childList: true,
-  });
-  document
-    .querySelector("#_emoticonGallery")
-    ?.addEventListener("click", (event) => {
-      if (event.target.nodeName === "LI") {
-        const emoji = findEmojiFromImage(event.target.firstChild);
-        if (emoji) {
-          countUpEmoji(emoji);
-        }
-      } else if (event.target.nodeName === "IMG") {
-        const emoji = findEmojiFromImage(event.target);
-        if (emoji) {
-          countUpEmoji(emoji);
-        }
-      }
-    });
-}, 1000);
 
 const TARGET_TYPE = Object.freeze({
   chat: "chat",
@@ -316,6 +211,116 @@ chrome.storage.sync.get(
     }
   }
 );
+
+const initObserver = () => {
+  const taskObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.id === "_taskInputActive";
+        });
+      })
+    ) {
+      initTaskAddArea();
+    }
+  });
+  taskObserver.observe(document.querySelector("#_roomTask")?.firstChild, {
+    childList: true,
+  });
+  const dialogObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.querySelector("#_fileUploadMessage");
+        });
+      })
+    ) {
+      initUploadChatArea();
+    } else if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return (
+            addedNode.querySelector("textarea") &&
+            [
+              "タスクの編集",
+              "Edit Task",
+              "編輯工作",
+              "Chỉnh sửa công việc",
+            ].includes(addedNode.querySelector("h1")?.textContent)
+          );
+        });
+      })
+    ) {
+      initTaskEditArea();
+    }
+  });
+  dialogObserver.observe(document.querySelector("#RootModalsEntryPoint"), {
+    childList: true,
+  });
+  const emojiListObserver = new MutationObserver((mutationRecords) => {
+    if (
+      mutationRecords.some((mutationRecord) => {
+        return Array.from(mutationRecord.addedNodes).some((addedNode) => {
+          return addedNode.querySelector("#emojiList");
+        });
+      })
+    ) {
+      document
+        .querySelector("#emojiList")
+        ?.addEventListener("click", (event) => {
+          if (event.target.nodeName === "LI") {
+            const emoji = findEmojiFromImage(
+              event.target.firstChild.firstChild
+            );
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          } else if (event.target.nodeName === "BUTTON") {
+            const emoji = findEmojiFromImage(event.target.firstChild);
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          } else if (event.target.nodeName === "IMG") {
+            const emoji = findEmojiFromImage(event.target);
+            if (emoji) {
+              countUpEmoji(emoji);
+            }
+          }
+          const textarea = document.querySelector("#_fileUploadMessage");
+          if (textarea) {
+            setTimeout(() => {
+              textarea.dispatchEvent(
+                new Event("input", {
+                  bubbles: true,
+                })
+              );
+            }, 100);
+          }
+        });
+    }
+  });
+  emojiListObserver.observe(document.querySelector("#_wrapper"), {
+    childList: true,
+  });
+};
+
+const initListener = () => {
+  document
+    .querySelector("#_emoticonGallery")
+    ?.addEventListener("click", (event) => {
+      if (event.target.nodeName === "LI") {
+        const emoji = findEmojiFromImage(event.target.firstChild);
+        if (emoji) {
+          countUpEmoji(emoji);
+        }
+      } else if (event.target.nodeName === "IMG") {
+        const emoji = findEmojiFromImage(event.target);
+        if (emoji) {
+          countUpEmoji(emoji);
+        }
+      }
+    });
+};
 
 const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
   if (iconParentNode) {
