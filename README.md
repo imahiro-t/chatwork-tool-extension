@@ -16,6 +16,10 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.7.3
+
+- 🐛 change timing to register observer
+
 ### 1.7.2
 
 - 💄 change default assign icon
