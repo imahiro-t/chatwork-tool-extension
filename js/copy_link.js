@@ -1,5 +1,6 @@
 let mousePositionNodeForCopyLink;
 let srcNodeForCopyLink;
+let currentMessageId;
 
 document.addEventListener("mousemove", (event) => {
   mousePositionNodeForCopyLink = event.target;
@@ -84,9 +85,9 @@ const recoverFromDummyForCopyLink = (eventNode, relatedEventNode) => {
 
 const targetNodeForCopyLink = (eventNode) => {
   let buttonNode;
-  if (eventNode.classList.contains("actionButton")) {
+  if (eventNode.nodeName === "BUTTON") {
     buttonNode = eventNode;
-  } else if (eventNode.closest("button")?.classList?.contains("actionButton")) {
+  } else {
     buttonNode = eventNode.closest("button");
   }
   if (!buttonNode) {
@@ -96,21 +97,23 @@ const targetNodeForCopyLink = (eventNode) => {
     return buttonNode;
   } else {
     const node = buttonNode.firstChild?.firstChild?.firstChild;
-    return node && node.getAttribute("href") === "#icon_link"
+    return node &&
+      node.nodeName === "use" &&
+      node.getAttribute("href") === "#icon_link"
       ? buttonNode
       : null;
   }
 };
 
 document.addEventListener("mousedown", (event) => {
+  const mid = event.target.closest("._message")?.getAttribute("data-mid");
+  if (mid) {
+    currentMessageId = mid;
+  }
   if (event.shiftKey) {
     const node = targetNodeForCopyLink(event.target);
-    if (node) {
-      const href = location.href;
-      const mid = node.closest("._message")?.getAttribute("data-mid");
-      if (href && mid) {
-        navigator.clipboard.writeText(`${href}-${mid}`);
-      }
+    if (node && currentMessageId) {
+      navigator.clipboard.writeText(`${location.href}-${currentMessageId}`);
     }
   }
 });
