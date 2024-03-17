@@ -16,6 +16,10 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.7.4
+
+- 🐛 copy link on narrow width
+
 ### 1.7.3
 
 - 🐛 change timing to register observer
