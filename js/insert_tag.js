@@ -417,8 +417,8 @@ const initListener = () => {
 const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
   if (iconParentNode) {
     if (
-      iconParentNode.childNodes &&
-      Array.from(iconParentNode.childNodes).every(
+      iconParentNode.children &&
+      Array.from(iconParentNode.children).every(
         (node) =>
           node.querySelector("button")?.id !== `__tag_info_${targetType}`
       )
@@ -555,7 +555,7 @@ const initKeyboardDialog = (
 
   const highlightSelection = (node, targetData) => {
     let currentIndex = 0;
-    node.firstChild.childNodes.forEach((node) => {
+    Array.from(node.firstChild.children).forEach((node) => {
       if (node.style.display === "flex") {
         if (targetData.selectionIndex === currentIndex) {
           if (isDark()) {
@@ -638,7 +638,7 @@ const initKeyboardDialog = (
   };
 
   const getSelectedNode = () => {
-    return Array.from(node.firstChild.childNodes).find(
+    return Array.from(node.firstChild.children).find(
       (node) =>
         node.style.display === "flex" &&
         node.style.backgroundColor !== "transparent"
@@ -659,7 +659,7 @@ const initKeyboardDialog = (
 
   const selectBelow = () => {
     let counter = 0;
-    node.firstChild.childNodes.forEach((node) => {
+    Array.from(node.firstChild.children).forEach((node) => {
       if (node.style.display === "flex") {
         counter++;
       }
@@ -799,7 +799,7 @@ const initAtMarkDialog = (textarea, targetType) => {
     });
 
     const filterBySearchWord = (searchWord, highlightSelection) => {
-      ul.childNodes.forEach((node) => {
+      Array.from(ul.children).forEach((node) => {
         const s = searchWord.toLowerCase();
         const dispName = node.querySelector("p")?.textContent.toLowerCase();
         const aid = node.querySelector("img")?.getAttribute("data-aid");
@@ -901,7 +901,7 @@ const initHatDialog = (textarea, targetType) => {
   });
 
   const filterBySearchWord = (searchWord, highlightSelection) => {
-    ul.childNodes.forEach((node) => {
+    Array.from(ul.children).forEach((node) => {
       const s = searchWord.toLowerCase();
       const dispName = node.querySelector("p")?.textContent.toLowerCase();
       if (s === "" || dispName.includes(s)) {
