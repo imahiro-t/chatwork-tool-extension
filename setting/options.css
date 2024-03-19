@@ -3,11 +3,6 @@ body {
   margin: 20px;
 }
 
-.container {
-  padding: 20px;
-  padding-top: 0px;
-}
-
 table {
   width: 100%;
   text-align: center;
@@ -16,14 +11,14 @@ table {
 }
 
 th {
-  padding: 10px;
+  height: 30px;
   background: #778ca3;
   border: solid 1px #666666;
   color: #ffffff;
 }
 
 td {
-  padding: 10px;
+  padding: 8px;
   border: solid 1px #666666;
 }
 
@@ -42,15 +37,45 @@ select {
 
 button {
   width: 100px;
+  height: 30px;
   margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
   border-radius: 3px;
-  background-color: #000;
-  color: #fff;
+  background-color: #222e3e;
+  color: #ffffff;
   cursor: pointer;
 }
 
 button:hover {
   background-color: #333;
+}
+
+.tab-area {
+  display: flex;
+  justify-content: space-around;
+  cursor: pointer;
+  .tab {
+    width: 300px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #ccc;
+    color: #222e3e;
+    border: none;
+  }
+  .tab.active {
+    background-color: #222e3e;
+    color: #ffffff;
+    border-right: 1px solid #50637b;
+    border-left: 1px solid #222e3e;
+  }
+}
+
+.content-area {
+  .content {
+    display: none;
+  }
+  .content.show {
+    margin-top: 50px;
+    display: block;
+  }
 }

@@ -1,3 +1,29 @@
+document.querySelectorAll(".tab").forEach((node) => {
+  node.addEventListener("click", (event) => {
+    const previousTab = document.querySelector(".active");
+    previousTab.classList.remove("active");
+    event.target.classList.add("active");
+    const tabs = Array.from(document.querySelector(".tab-area").children);
+    const contents = Array.from(
+      document.querySelector(".content-area").children
+    );
+    let index = -1;
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i] === event.target) {
+        index = i;
+        break;
+      }
+    }
+    for (let i = 0; i < contents.length; i++) {
+      if (i === index) {
+        contents[i].classList.add("show");
+      } else {
+        contents[i].classList.remove("show");
+      }
+    }
+  });
+});
+
 // Saves options to chrome.storage
 const saveOptions = () => {
   const emoji_count = document.getElementById("emoji_count").value;
@@ -47,6 +73,58 @@ const saveOptions = () => {
       ? document.getElementById(`assign_room_id_${i + 1}`).value
       : "";
   }
+  const custom_labels = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ];
+  const custom_messages = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ];
+  for (i = 0; i < 20; i++) {
+    custom_labels[i] = document.getElementById(`custom_label_${i + 1}`)
+      ? document.getElementById(`custom_label_${i + 1}`).value
+      : "";
+    custom_messages[i] = document.getElementById(`custom_message_${i + 1}`)
+      ? document.getElementById(`custom_message_${i + 1}`).value
+      : "";
+  }
 
   chrome.storage.sync.clear();
   chrome.storage.sync.set(
@@ -62,6 +140,8 @@ const saveOptions = () => {
       assign_labels: assign_labels,
       assign_members: assign_members,
       assign_room_ids: assign_room_ids,
+      custom_labels: custom_labels,
+      custom_messages: custom_messages,
     },
     () => {
       // Update status to let user know options were saved.
@@ -90,6 +170,50 @@ const restoreOptions = () => {
       assign_labels: ["", "", "", "", "", "", "", "", "", ""],
       assign_members: ["", "", "", "", "", "", "", "", "", ""],
       assign_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+      custom_labels: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
+      custom_messages: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
     },
     (items) => {
       document.getElementById("emoji_count").value = items.emoji_count;
@@ -118,6 +242,12 @@ const restoreOptions = () => {
           items.assign_members[i];
         document.getElementById(`assign_room_id_${i + 1}`).value =
           items.assign_room_ids[i];
+      }
+      for (i = 0; i < 20; i++) {
+        document.getElementById(`custom_label_${i + 1}`).value =
+          items.custom_labels[i];
+        document.getElementById(`custom_message_${i + 1}`).value =
+          items.custom_messages[i];
       }
     }
   );

@@ -1,295 +1,427 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Chatwork Tools Extension Options</title>
+    <title>Chatwork Tools</title>
     <link rel="stylesheet" type="text/css" href="options.css" />
   </head>
   <body>
     <main class="container">
-      <h2>Display Count for Frequently Used Emoji</h2>
-      <select id="emoji_count">
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-      </select>
-      <h2>Custom Message for Chat</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Message</th>
-            <th scope="col">Icon</th>
-            <th scope="col">Room ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td><textarea id="chat_message_1" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_1" /></td>
-            <td><textarea id="chat_room_id_1" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td><textarea id="chat_message_2" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_2" /></td>
-            <td><textarea id="chat_room_id_2" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td><textarea id="chat_message_3" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_3" /></td>
-            <td><textarea id="chat_room_id_3" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">4</th>
-            <td><textarea id="chat_message_4" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_4" /></td>
-            <td><textarea id="chat_room_id_4" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">5</th>
-            <td><textarea id="chat_message_5" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_5" /></td>
-            <td><textarea id="chat_room_id_5" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">6</th>
-            <td><textarea id="chat_message_6" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_6" /></td>
-            <td><textarea id="chat_room_id_6" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">7</th>
-            <td><textarea id="chat_message_7" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_7" /></td>
-            <td><textarea id="chat_room_id_7" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">8</th>
-            <td><textarea id="chat_message_8" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_8" /></td>
-            <td><textarea id="chat_room_id_8" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">9</th>
-            <td><textarea id="chat_message_9" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_9" /></td>
-            <td><textarea id="chat_room_id_9" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">10</th>
-            <td><textarea id="chat_message_10" rows="2"></textarea></td>
-            <td><input type="text" id="chat_icon_10" /></td>
-            <td><textarea id="chat_room_id_10" rows="2"></textarea></td>
-          </tr>
-        </tbody>
-      </table>
-      <h2>Custom Message for Task</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Message</th>
-            <th scope="col">Icon</th>
-            <th scope="col">Room ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td><textarea id="task_message_1" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_1" /></td>
-            <td><textarea id="task_room_id_1" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td><textarea id="task_message_2" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_2" /></td>
-            <td><textarea id="task_room_id_2" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td><textarea id="task_message_3" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_3" /></td>
-            <td><textarea id="task_room_id_3" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">4</th>
-            <td><textarea id="task_message_4" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_4" /></td>
-            <td><textarea id="task_room_id_4" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">5</th>
-            <td><textarea id="task_message_5" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_5" /></td>
-            <td><textarea id="task_room_id_5" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">6</th>
-            <td><textarea id="task_message_6" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_6" /></td>
-            <td><textarea id="task_room_id_6" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">7</th>
-            <td><textarea id="task_message_7" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_7" /></td>
-            <td><textarea id="task_room_id_7" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">8</th>
-            <td><textarea id="task_message_8" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_8" /></td>
-            <td><textarea id="task_room_id_8" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">9</th>
-            <td><textarea id="task_message_9" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_9" /></td>
-            <td><textarea id="task_room_id_9" rows="2"></textarea></td>
-          </tr>
-          <tr>
-            <th scope="row">10</th>
-            <td><textarea id="task_message_10" rows="2"></textarea></td>
-            <td><input type="text" id="task_icon_10" /></td>
-            <td><textarea id="task_room_id_10" rows="2"></textarea></td>
-          </tr>
-        </tbody>
-      </table>
-      <h2>Assign Members to Task</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Account ID</th>
-            <th scope="col">Label</th>
-            <th scope="col">Icon</th>
-            <th scope="col">Room ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>
-              <textarea id="assign_member_1" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_1" /></td>
-            <td><input type="text" id="assign_icon_1" /></td>
-            <td>
-              <textarea id="assign_room_id_1" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>
-              <textarea id="assign_member_2" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_2" /></td>
-            <td><input type="text" id="assign_icon_2" /></td>
-            <td>
-              <textarea id="assign_room_id_2" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>
-              <textarea id="assign_member_3" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_3" /></td>
-            <td><input type="text" id="assign_icon_3" /></td>
-            <td>
-              <textarea id="assign_room_id_3" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">4</th>
-            <td>
-              <textarea id="assign_member_4" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_4" /></td>
-            <td><input type="text" id="assign_icon_4" /></td>
-            <td>
-              <textarea id="assign_room_id_4" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">5</th>
-            <td>
-              <textarea id="assign_member_5" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_5" /></td>
-            <td><input type="text" id="assign_icon_5" /></td>
-            <td>
-              <textarea id="assign_room_id_5" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">6</th>
-            <td>
-              <textarea id="assign_member_6" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_6" /></td>
-            <td><input type="text" id="assign_icon_6" /></td>
-            <td>
-              <textarea id="assign_room_id_6" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">7</th>
-            <td>
-              <textarea id="assign_member_7" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_7" /></td>
-            <td><input type="text" id="assign_icon_7" /></td>
-            <td>
-              <textarea id="assign_room_id_7" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">8</th>
-            <td>
-              <textarea id="assign_member_8" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_8" /></td>
-            <td><input type="text" id="assign_icon_8" /></td>
-            <td>
-              <textarea id="assign_room_id_8" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">9</th>
-            <td>
-              <textarea id="assign_member_9" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_9" /></td>
-            <td><input type="text" id="assign_icon_9" /></td>
-            <td>
-              <textarea id="assign_room_id_9" rows="2"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">10</th>
-            <td>
-              <textarea id="assign_member_10" rows="2"></textarea>
-            </td>
-            <td><input type="text" id="assign_label_10" /></td>
-            <td><input type="text" id="assign_icon_10" /></td>
-            <td>
-              <textarea id="assign_room_id_10" rows="2"></textarea>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="tab-area">
+        <div id="1" class="tab active">Custom Message</div>
+        <div id="2" class="tab">Custom Message for Chat</div>
+        <div id="3" class="tab">Custom Message for Task</div>
+        <div id="4" class="tab">Assign Members to Task</div>
+        <div id="5" class="tab">Others</div>
+      </div>
+      <div class="content-area">
+        <div class="content show">
+          <h2>Custom Message</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Label</th>
+                <th scope="col">Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td><input type="text" id="custom_label_1" /></td>
+                <td><textarea id="custom_message_1" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td><input type="text" id="custom_label_2" /></td>
+                <td><textarea id="custom_message_2" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td><input type="text" id="custom_label_3" /></td>
+                <td><textarea id="custom_message_3" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td><input type="text" id="custom_label_4" /></td>
+                <td><textarea id="custom_message_4" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td><input type="text" id="custom_label_5" /></td>
+                <td><textarea id="custom_message_5" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td><input type="text" id="custom_label_6" /></td>
+                <td><textarea id="custom_message_6" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td><input type="text" id="custom_label_7" /></td>
+                <td><textarea id="custom_message_7" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">8</th>
+                <td><input type="text" id="custom_label_8" /></td>
+                <td><textarea id="custom_message_8" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">9</th>
+                <td><input type="text" id="custom_label_9" /></td>
+                <td><textarea id="custom_message_9" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">10</th>
+                <td><input type="text" id="custom_label_10" /></td>
+                <td><textarea id="custom_message_10" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">11</th>
+                <td><input type="text" id="custom_label_11" /></td>
+                <td><textarea id="custom_message_11" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">12</th>
+                <td><input type="text" id="custom_label_12" /></td>
+                <td><textarea id="custom_message_12" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">13</th>
+                <td><input type="text" id="custom_label_13" /></td>
+                <td><textarea id="custom_message_13" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">14</th>
+                <td><input type="text" id="custom_label_14" /></td>
+                <td><textarea id="custom_message_14" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">15</th>
+                <td><input type="text" id="custom_label_15" /></td>
+                <td><textarea id="custom_message_15" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">16</th>
+                <td><input type="text" id="custom_label_16" /></td>
+                <td><textarea id="custom_message_16" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">17</th>
+                <td><input type="text" id="custom_label_17" /></td>
+                <td><textarea id="custom_message_17" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">18</th>
+                <td><input type="text" id="custom_label_18" /></td>
+                <td><textarea id="custom_message_18" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">19</th>
+                <td><input type="text" id="custom_label_19" /></td>
+                <td><textarea id="custom_message_19" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">20</th>
+                <td><input type="text" id="custom_label_20" /></td>
+                <td><textarea id="custom_message_20" rows="2"></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="content">
+          <h2>Custom Message for Chat</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Message</th>
+                <th scope="col">Icon</th>
+                <th scope="col">Room ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td><textarea id="chat_message_1" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_1" /></td>
+                <td><textarea id="chat_room_id_1" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td><textarea id="chat_message_2" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_2" /></td>
+                <td><textarea id="chat_room_id_2" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td><textarea id="chat_message_3" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_3" /></td>
+                <td><textarea id="chat_room_id_3" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td><textarea id="chat_message_4" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_4" /></td>
+                <td><textarea id="chat_room_id_4" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td><textarea id="chat_message_5" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_5" /></td>
+                <td><textarea id="chat_room_id_5" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td><textarea id="chat_message_6" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_6" /></td>
+                <td><textarea id="chat_room_id_6" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td><textarea id="chat_message_7" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_7" /></td>
+                <td><textarea id="chat_room_id_7" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">8</th>
+                <td><textarea id="chat_message_8" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_8" /></td>
+                <td><textarea id="chat_room_id_8" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">9</th>
+                <td><textarea id="chat_message_9" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_9" /></td>
+                <td><textarea id="chat_room_id_9" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">10</th>
+                <td><textarea id="chat_message_10" rows="2"></textarea></td>
+                <td><input type="text" id="chat_icon_10" /></td>
+                <td><textarea id="chat_room_id_10" rows="2"></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="content">
+          <h2>Custom Message for Task</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Message</th>
+                <th scope="col">Icon</th>
+                <th scope="col">Room ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td><textarea id="task_message_1" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_1" /></td>
+                <td><textarea id="task_room_id_1" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td><textarea id="task_message_2" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_2" /></td>
+                <td><textarea id="task_room_id_2" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td><textarea id="task_message_3" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_3" /></td>
+                <td><textarea id="task_room_id_3" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td><textarea id="task_message_4" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_4" /></td>
+                <td><textarea id="task_room_id_4" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td><textarea id="task_message_5" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_5" /></td>
+                <td><textarea id="task_room_id_5" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td><textarea id="task_message_6" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_6" /></td>
+                <td><textarea id="task_room_id_6" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td><textarea id="task_message_7" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_7" /></td>
+                <td><textarea id="task_room_id_7" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">8</th>
+                <td><textarea id="task_message_8" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_8" /></td>
+                <td><textarea id="task_room_id_8" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">9</th>
+                <td><textarea id="task_message_9" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_9" /></td>
+                <td><textarea id="task_room_id_9" rows="2"></textarea></td>
+              </tr>
+              <tr>
+                <th scope="row">10</th>
+                <td><textarea id="task_message_10" rows="2"></textarea></td>
+                <td><input type="text" id="task_icon_10" /></td>
+                <td><textarea id="task_room_id_10" rows="2"></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="content">
+          <h2>Assign Members to Task</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Account ID</th>
+                <th scope="col">Label</th>
+                <th scope="col">Icon</th>
+                <th scope="col">Room ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>
+                  <textarea id="assign_member_1" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_1" /></td>
+                <td><input type="text" id="assign_icon_1" /></td>
+                <td>
+                  <textarea id="assign_room_id_1" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>
+                  <textarea id="assign_member_2" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_2" /></td>
+                <td><input type="text" id="assign_icon_2" /></td>
+                <td>
+                  <textarea id="assign_room_id_2" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>
+                  <textarea id="assign_member_3" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_3" /></td>
+                <td><input type="text" id="assign_icon_3" /></td>
+                <td>
+                  <textarea id="assign_room_id_3" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td>
+                  <textarea id="assign_member_4" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_4" /></td>
+                <td><input type="text" id="assign_icon_4" /></td>
+                <td>
+                  <textarea id="assign_room_id_4" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td>
+                  <textarea id="assign_member_5" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_5" /></td>
+                <td><input type="text" id="assign_icon_5" /></td>
+                <td>
+                  <textarea id="assign_room_id_5" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td>
+                  <textarea id="assign_member_6" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_6" /></td>
+                <td><input type="text" id="assign_icon_6" /></td>
+                <td>
+                  <textarea id="assign_room_id_6" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td>
+                  <textarea id="assign_member_7" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_7" /></td>
+                <td><input type="text" id="assign_icon_7" /></td>
+                <td>
+                  <textarea id="assign_room_id_7" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">8</th>
+                <td>
+                  <textarea id="assign_member_8" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_8" /></td>
+                <td><input type="text" id="assign_icon_8" /></td>
+                <td>
+                  <textarea id="assign_room_id_8" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">9</th>
+                <td>
+                  <textarea id="assign_member_9" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_9" /></td>
+                <td><input type="text" id="assign_icon_9" /></td>
+                <td>
+                  <textarea id="assign_room_id_9" rows="2"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">10</th>
+                <td>
+                  <textarea id="assign_member_10" rows="2"></textarea>
+                </td>
+                <td><input type="text" id="assign_label_10" /></td>
+                <td><input type="text" id="assign_icon_10" /></td>
+                <td>
+                  <textarea id="assign_room_id_10" rows="2"></textarea>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="content">
+          <h2>Display Count for Frequently Used Emoji</h2>
+          <select id="emoji_count">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </div>
+
       <button id="save">Save</button>
       <div id="status"></div>
       <script src="options.js"></script>

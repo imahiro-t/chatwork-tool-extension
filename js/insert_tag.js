@@ -176,6 +176,50 @@ const assignIcons = ["", "", "", "", "", "", "", "", "", ""];
 const assignLabels = ["", "", "", "", "", "", "", "", "", ""];
 const assignMembers = ["", "", "", "", "", "", "", "", "", ""];
 const assignRoomIds = ["", "", "", "", "", "", "", "", "", ""];
+const customLabels = [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+];
+const customMessages = [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+];
 
 chrome.storage.sync.get(
   {
@@ -190,6 +234,50 @@ chrome.storage.sync.get(
     assign_labels: ["", "", "", "", "", "", "", "", "", ""],
     assign_members: ["", "", "", "", "", "", "", "", "", ""],
     assign_room_ids: ["", "", "", "", "", "", "", "", "", ""],
+    custom_labels: [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    ],
+    custom_messages: [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    ],
   },
   (items) => {
     emojiCount = items.emoji_count;
@@ -208,6 +296,10 @@ chrome.storage.sync.get(
       assignLabels[i] = items.assign_labels[i];
       assignMembers[i] = items.assign_members[i];
       assignRoomIds[i] = items.assign_room_ids[i];
+    }
+    for (i = 0; i < 20; i++) {
+      customLabels[i] = items.custom_labels[i];
+      customMessages[i] = items.custom_messages[i];
     }
   }
 );
@@ -396,7 +488,8 @@ const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
         attributes: true,
       });
     }
-    initAtMarkTo(textarea, targetType);
+    initAtMarkDialog(textarea, targetType);
+    initHatDialog(textarea, targetType);
     wrapTextarea(textarea, targetType);
   }
 };
@@ -433,6 +526,207 @@ const initUploadChatArea = () => {
   }
 };
 
+const initKeyboardDialog = (
+  node,
+  textarea,
+  targetType,
+  targetData,
+  key,
+  filterBySearchWord,
+  findDataFor
+) => {
+  const getTargetRect = (textarea, targetType) => {
+    const dummy = document.createElement("pre");
+    dummy.setAttribute("role", "textbox");
+    dummy.setAttribute("contenteditable", "true");
+    dummy.setAttribute("aria-multiline", "true");
+    dummy.setAttribute("aria-labelledby", "txtboxMultilineLabel");
+    dummy.setAttribute("aria-readonly", "true");
+    dummy.setAttribute("class", textarea.getAttribute("class"));
+    dummy.setAttribute("style", textarea.getAttribute("style"));
+    dummy.style.position = "absolute";
+    textarea.parentNode.insertBefore(dummy, textarea);
+    dummy.innerHTML = decorateText(textarea.value, targetType);
+    const span = dummy.querySelector("#__keyboard_dialog_span");
+    const rect = span.getBoundingClientRect();
+    textarea.parentNode.removeChild(dummy);
+    return rect;
+  };
+
+  const highlightSelection = (node, targetData) => {
+    let currentIndex = 0;
+    node.firstChild.childNodes.forEach((node) => {
+      if (node.style.display === "flex") {
+        if (targetData.selectionIndex === currentIndex) {
+          if (isDark()) {
+            node.style.backgroundColor = "rgba(41, 75, 114, 0.5)";
+          } else {
+            node.style.backgroundColor = "rgba(204, 223, 245, 0.5)";
+          }
+        } else {
+          node.style.backgroundColor = "transparent";
+        }
+        currentIndex++;
+      }
+    });
+  };
+
+  const openSelectorDialog = (node, textarea, targetType, targetData) => {
+    targetData.processing = true;
+    targetData.startPosition = textarea.selectionStart;
+    targetData.searchWord = "";
+    targetData.selectionIndex = 0;
+    const targetRect = getTargetRect(textarea, targetType);
+    node.style.position = "absolute";
+    node.style.top = targetRect.top - 180 + "px";
+    node.style.left = targetRect.left - 20 + "px";
+    node.style.display = "block";
+    node.style.opacity = 1;
+    node.firstChild.scrollTop = 0;
+  };
+
+  const closeSelectorDialog = (node, textarea, targetData) => {
+    targetData.processing = false;
+    targetData.startPosition = 0;
+    targetData.searchWord = "";
+    targetData.selectionIndex = 0;
+    node.style.display = "none";
+    textarea.dispatchEvent(
+      new Event("input", {
+        bubbles: true,
+      })
+    );
+  };
+
+  const insertData = (data, node, textarea, targetData) => {
+    if (data) {
+      const before = textarea.value.substring(0, targetData.startPosition - 1);
+      const after = textarea.value.substring(
+        targetData.startPosition + targetData.searchWord.length
+      );
+      textarea.value = `${before}${data}${after}`;
+      textarea.focus();
+      textarea.selectionStart = (before + data).length;
+      textarea.selectionEnd = (before + data).length;
+      closeSelectorDialog(node, textarea, targetData);
+    }
+  };
+
+  node.firstChild.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const data = findDataFor(event.target);
+    insertData(data, node, textarea, targetData);
+  });
+
+  textarea.addEventListener("click", () => {
+    if (targetData.processing) {
+      closeSelectorDialog(node, textarea, targetData);
+    }
+  });
+
+  const available = (event) => {
+    if (atMarkData.processing || hatData.processing) return false;
+    if (event.data !== key) return false;
+    const cursorPos = event.target.selectionStart;
+    if (cursorPos === 1) return true;
+    const previousWord = event.target.value.substring(
+      cursorPos - 2,
+      cursorPos - 1
+    );
+    if ([" ", "\n"].includes(previousWord)) return true;
+    return false;
+  };
+
+  const getSelectedNode = () => {
+    return Array.from(node.firstChild.childNodes).find(
+      (node) =>
+        node.style.display === "flex" &&
+        node.style.backgroundColor !== "transparent"
+    );
+  };
+
+  const selectAbove = () => {
+    if (targetData.selectionIndex > 0) {
+      targetData.selectionIndex = targetData.selectionIndex - 1;
+      node.firstChild.scrollBy({
+        top: -34,
+        left: 0,
+        behavior: "smooth",
+      });
+      highlightSelection(node, targetData);
+    }
+  };
+
+  const selectBelow = () => {
+    let counter = 0;
+    node.firstChild.childNodes.forEach((node) => {
+      if (node.style.display === "flex") {
+        counter++;
+      }
+    });
+    if (targetData.selectionIndex < counter - 1) {
+      targetData.selectionIndex = targetData.selectionIndex + 1;
+      node.firstChild.scrollBy({
+        top: 34,
+        left: 0,
+        behavior: "smooth",
+      });
+      highlightSelection(node, targetData);
+    }
+  };
+
+  textarea.addEventListener("input", (event) => {
+    if (available(event)) {
+      openSelectorDialog(node, textarea, targetType, targetData);
+      filterBySearchWord(targetData.searchWord, highlightSelection);
+    } else if (targetData.processing) {
+      if (targetData.startPosition - 1 === textarea.selectionStart) {
+        closeSelectorDialog(node, textarea, targetData);
+      } else {
+        targetData.searchWord = textarea.value.substring(
+          targetData.startPosition,
+          textarea.selectionStart
+        );
+        filterBySearchWord(targetData.searchWord, highlightSelection);
+      }
+    }
+  });
+
+  textarea.addEventListener("keydown", (event) => {
+    if (targetData.processing) {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+        const data = findDataFor(getSelectedNode());
+        insertData(data, node, textarea, targetData);
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        closeSelectorDialog(node, textarea, targetData);
+        setTimeout(() => {
+          textarea.focus();
+        }, 100);
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        selectBelow();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        selectAbove();
+      } else if (event.key === "End") {
+        event.preventDefault();
+      } else if (event.key === "Home") {
+        event.preventDefault();
+      } else if (event.key === "PageDown") {
+        event.preventDefault();
+      } else if (event.key === "PageUp") {
+        event.preventDefault();
+      }
+    }
+  });
+};
+
 const atMarkData = {
   processing: false,
   startPosition: 0,
@@ -440,14 +734,15 @@ const atMarkData = {
   selectionIndex: 0,
 };
 
-const initAtMarkTo = (textarea, targetType) => {
+const initAtMarkDialog = (textarea, targetType) => {
+  const targetData = atMarkData;
   const oldNode = document.getElementById("__at_mark_to");
   if (oldNode) {
     oldNode.parentNode.removeChild(oldNode);
-    atMarkData.processing = false;
-    atMarkData.startPosition = 0;
-    atMarkData.searchWord = "";
-    atMarkData.selectionIndex = 0;
+    targetData.processing = false;
+    targetData.startPosition = 0;
+    targetData.searchWord = "";
+    targetData.selectionIndex = 0;
   }
   const to = document.querySelector("#_to");
   const toList = document.querySelector("#_toList");
@@ -503,94 +798,7 @@ const initAtMarkTo = (textarea, targetType) => {
       ul.appendChild(li);
     });
 
-    const getTargetRect = (textarea) => {
-      const dummy = document.createElement("pre");
-      dummy.setAttribute("role", "textbox");
-      dummy.setAttribute("contenteditable", "true");
-      dummy.setAttribute("aria-multiline", "true");
-      dummy.setAttribute("aria-labelledby", "txtboxMultilineLabel");
-      dummy.setAttribute("aria-readonly", "true");
-      dummy.setAttribute("class", textarea.getAttribute("class"));
-      dummy.setAttribute("style", textarea.getAttribute("style"));
-      dummy.style.position = "absolute";
-      textarea.parentNode.insertBefore(dummy, textarea);
-      dummy.innerHTML = decorateText(textarea.value, targetType);
-      const atMarkSpan = dummy.querySelector("#__at_mark_span");
-      const rect = atMarkSpan.getBoundingClientRect();
-      textarea.parentNode.removeChild(dummy);
-      return rect;
-    };
-
-    const openAtMarkToDialog = (textarea) => {
-      atMarkData.processing = true;
-      atMarkData.startPosition = textarea.selectionStart;
-      atMarkData.searchWord = "";
-      atMarkData.selectionIndex = 0;
-      const targetRect = getTargetRect(textarea);
-      node.style.position = "absolute";
-      node.style.top = targetRect.top - 180 + "px";
-      node.style.left = targetRect.left - 20 + "px";
-      node.style.display = "block";
-      node.style.opacity = 1;
-      ul.scrollTop = 0;
-    };
-
-    const closeAtMarkToDialog = (textarea) => {
-      atMarkData.processing = false;
-      atMarkData.startPosition = 0;
-      atMarkData.searchWord = "";
-      atMarkData.selectionIndex = 0;
-      node.style.display = "none";
-      textarea.dispatchEvent(
-        new Event("input", {
-          bubbles: true,
-        })
-      );
-    };
-
-    const insertTo = (to, textarea) => {
-      if (to) {
-        const before = textarea.value.substring(
-          0,
-          atMarkData.startPosition - 1
-        );
-        const after = textarea.value.substring(
-          atMarkData.startPosition + atMarkData.searchWord.length
-        );
-        textarea.value = `${before}${to}${after}`;
-        textarea.focus();
-        textarea.selectionStart = (before + to).length;
-        textarea.selectionEnd = (before + to).length;
-        closeAtMarkToDialog(textarea);
-      }
-    };
-
-    ul.addEventListener("click", (event) => {
-      event.stopPropagation();
-      const to = findToForAtMark(event.target);
-      insertTo(to, textarea);
-    });
-
-    textarea.addEventListener("click", () => {
-      if (atMarkData.processing) {
-        closeAtMarkToDialog(textarea);
-      }
-    });
-
-    const atMarkToAvailable = (event) => {
-      if (event.data !== "@") return false;
-      if (atMarkData.processing) return false;
-      const cursorPos = event.target.selectionStart;
-      if (cursorPos === 1) return true;
-      const previousWord = event.target.value.substring(
-        cursorPos - 2,
-        cursorPos - 1
-      );
-      if ([" ", "\n"].includes(previousWord)) return true;
-      return false;
-    };
-
-    const filterAtMarkTo = (searchWord) => {
+    const filterBySearchWord = (searchWord, highlightSelection) => {
       ul.childNodes.forEach((node) => {
         const s = searchWord.toLowerCase();
         const dispName = node.querySelector("p")?.textContent.toLowerCase();
@@ -633,118 +841,89 @@ const initAtMarkTo = (textarea, targetType) => {
           }
         }
       });
-      atMarkData.selectionIndex = 0;
+      targetData.selectionIndex = 0;
       ul.scrollTop = 0;
-      highlightSelection();
+      highlightSelection(node, targetData);
     };
 
-    const getSelectedNode = () => {
-      return Array.from(ul.childNodes).find(
-        (node) =>
-          node.style.display === "flex" &&
-          node.style.backgroundColor !== "transparent"
-      );
-    };
-
-    const highlightSelection = () => {
-      let currentIndex = 0;
-      ul.childNodes.forEach((node) => {
-        if (node.style.display === "flex") {
-          if (atMarkData.selectionIndex === currentIndex) {
-            if (isDark()) {
-              node.style.backgroundColor = "rgba(41, 75, 114, 0.5)";
-            } else {
-              node.style.backgroundColor = "rgba(204, 223, 245, 0.5)";
-            }
-          } else {
-            node.style.backgroundColor = "transparent";
-          }
-          currentIndex++;
-        }
-      });
-    };
-
-    const selectAbove = () => {
-      if (atMarkData.selectionIndex > 0) {
-        atMarkData.selectionIndex = atMarkData.selectionIndex - 1;
-        ul.scrollBy({
-          top: -34,
-          left: 0,
-          behavior: "smooth",
-        });
-        highlightSelection();
-      }
-    };
-
-    const selectBelow = () => {
-      let counter = 0;
-      ul.childNodes.forEach((node) => {
-        if (node.style.display === "flex") {
-          counter++;
-        }
-      });
-      if (atMarkData.selectionIndex < counter - 1) {
-        atMarkData.selectionIndex = atMarkData.selectionIndex + 1;
-        ul.scrollBy({
-          top: 34,
-          left: 0,
-          behavior: "smooth",
-        });
-        highlightSelection();
-      }
-    };
-
-    textarea.addEventListener("input", (event) => {
-      if (atMarkToAvailable(event)) {
-        openAtMarkToDialog(textarea);
-        filterAtMarkTo(atMarkData.searchWord);
-      } else if (atMarkData.processing) {
-        if (atMarkData.startPosition - 1 === textarea.selectionStart) {
-          closeAtMarkToDialog(textarea);
-        } else {
-          atMarkData.searchWord = textarea.value.substring(
-            atMarkData.startPosition,
-            textarea.selectionStart
-          );
-          filterAtMarkTo(atMarkData.searchWord);
-        }
-      }
-    });
-
-    textarea.addEventListener("keydown", (event) => {
-      if (atMarkData.processing) {
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          const to = findToForAtMark(getSelectedNode());
-          insertTo(to, textarea);
-        } else if (event.key === "Escape") {
-          event.preventDefault();
-          closeAtMarkToDialog(textarea);
-          setTimeout(() => {
-            textarea.focus();
-          }, 100);
-        } else if (event.key === "ArrowDown") {
-          event.preventDefault();
-          selectBelow();
-        } else if (event.key === "ArrowLeft") {
-          event.preventDefault();
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault();
-        } else if (event.key === "ArrowUp") {
-          event.preventDefault();
-          selectAbove();
-        } else if (event.key === "End") {
-          event.preventDefault();
-        } else if (event.key === "Home") {
-          event.preventDefault();
-        } else if (event.key === "PageDown") {
-          event.preventDefault();
-        } else if (event.key === "PageUp") {
-          event.preventDefault();
-        }
-      }
-    });
+    initKeyboardDialog(
+      node,
+      textarea,
+      targetType,
+      targetData,
+      "@",
+      filterBySearchWord,
+      findDataForAtMark
+    );
   }
+};
+
+const hatData = {
+  processing: false,
+  startPosition: 0,
+  searchWord: "",
+  selectionIndex: 0,
+};
+
+const initHatDialog = (textarea, targetType) => {
+  if (customLabels.every((label) => label.length === 0)) {
+    return;
+  }
+  const targetData = hatData;
+  const oldNode = document.getElementById(`__custom_message_${targetType}`);
+  if (oldNode) {
+    oldNode.parentNode.removeChild(oldNode);
+    targetData.processing = false;
+    targetData.startPosition = 0;
+    targetData.searchWord = "";
+    targetData.selectionIndex = 0;
+  }
+
+  const node = htmlStringToNode(
+    `<div id="__custom_message_${targetType}" class="toSelectorTooltip tooltip tooltip--white" role="tooltip"></div>`
+  );
+  const ul = htmlStringToNode(
+    `<ul class="_cwLTList tooltipList" role="list" style="max-height: 160px; height: 160px;"></ul>`
+  );
+  const liForClone = htmlStringToNode(
+    `<li role="listitem" class="tooltipList__item"><p style="text-wrap: nowrap;"></p></li>`
+  );
+  node.appendChild(ul);
+  document.querySelector("#root").appendChild(node);
+
+  customLabels.forEach((label, index) => {
+    if (label.length > 0) {
+      const li = liForClone.cloneNode(true);
+      li.setAttribute("data-index", `${index}`);
+      li.firstChild.textContent = `${label}`;
+      ul.appendChild(li);
+    }
+  });
+
+  const filterBySearchWord = (searchWord, highlightSelection) => {
+    ul.childNodes.forEach((node) => {
+      const s = searchWord.toLowerCase();
+      const dispName = node.querySelector("p")?.textContent.toLowerCase();
+      if (s === "" || dispName.includes(s)) {
+        node.style.display = "flex";
+      } else {
+        node.style.display = "none";
+      }
+    });
+    targetData.selectionIndex = 0;
+    ul.scrollTop = 0;
+    highlightSelection(node, targetData);
+  };
+
+  initKeyboardDialog(
+    node,
+    textarea,
+    targetType,
+    targetData,
+    "^",
+    filterBySearchWord,
+    findDataForHat
+  );
 };
 
 const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
@@ -795,6 +974,7 @@ const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
       }
     });
     taskParentNode.firstChild.before(iconsNode);
+    initHatDialog(textarea, targetType);
     wrapTextarea(textarea, targetType);
   }
 };
@@ -1291,6 +1471,16 @@ const decorateText = (text, targetType) => {
       atMarkData.startPosition + atMarkData.searchWord.length
     );
     transformedText = `${before}<<<${target}>>>${after}`;
+  } else if (hatData.processing) {
+    const before = text.substring(0, hatData.startPosition - 1);
+    const target = text.substring(
+      hatData.startPosition - 1,
+      hatData.startPosition + hatData.searchWord.length
+    );
+    const after = text.substring(
+      hatData.startPosition + hatData.searchWord.length
+    );
+    transformedText = `${before}<<<${target}>>>${after}`;
   }
   transformedText = ESCAPE_EMOJIS.reduce(
     (acc, value) => acc.replaceAll(value.emoji, `<-<${value.escape_word}>->`),
@@ -1331,8 +1521,16 @@ const highlightTag = (text, targetType) => {
     const atMarkTo = escapeHtml(`<<<@${atMarkData.searchWord}>>>`);
     transformedText = text.replace(
       atMarkTo,
-      `<span id="__at_mark_span" style="color: royalblue;">@${escapeHtml(
+      `<span id="__keyboard_dialog_span" style="color: mediumseagreen;">@${escapeHtml(
         atMarkData.searchWord
+      )}</span>`
+    );
+  } else if (hatData.processing) {
+    const hat = escapeHtml(`<<<^${hatData.searchWord}>>>`);
+    transformedText = text.replace(
+      hat,
+      `<span id="__keyboard_dialog_span" style="color: royalblue;">^${escapeHtml(
+        hatData.searchWord
       )}</span>`
     );
   }
@@ -1389,19 +1587,19 @@ const highlightTag = (text, targetType) => {
     );
 };
 
-const findToForAtMark = (node) => {
+const findDataForAtMark = (node) => {
   if (node) {
     if (node.nodeName === "LI") {
-      return findToForAtMarkFromLi(node);
+      return findDataForAtMarkFromLi(node);
     } else {
-      return findToForAtMarkFromLi(node.closest("li"));
+      return findDataForAtMarkFromLi(node.closest("li"));
     }
   } else {
     return null;
   }
 };
 
-const findToForAtMarkFromLi = (node) => {
+const findDataForAtMarkFromLi = (node) => {
   if (node.querySelector(".toSelectorTooltip__toAllIconContainer")) {
     return "[toall]";
   }
@@ -1424,6 +1622,24 @@ const findToForAtMarkFromLi = (node) => {
     const name = node.lastChild?.textContent ?? "";
     return `[To:${aid}]${name}\n`;
   }
+};
+
+const findDataForHat = (node) => {
+  if (node) {
+    if (node.nodeName === "LI") {
+      return findDataForHatFromLi(node);
+    } else {
+      return findDataForHatFromLi(node.closest("li"));
+    }
+  } else {
+    return null;
+  }
+};
+
+const findDataForHatFromLi = (node) => {
+  const index = node.getAttribute("data-index");
+  const message = customMessages[index];
+  return message;
 };
 
 const isDark = () => {
