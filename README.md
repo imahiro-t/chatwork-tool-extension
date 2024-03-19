@@ -16,6 +16,11 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.8.0
+
+- ✨ Enable to insert custom message with ^
+- ✨ Enable to import setting from JSON
+
 ### 1.7.4
 
 - 🐛 copy link on narrow width
