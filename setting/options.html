@@ -7,11 +7,12 @@
   <body>
     <main class="container">
       <div class="tab-area">
-        <div id="1" class="tab active">Custom Message</div>
-        <div id="2" class="tab">Custom Message for Chat</div>
-        <div id="3" class="tab">Custom Message for Task</div>
-        <div id="4" class="tab">Assign Members to Task</div>
-        <div id="5" class="tab">Others</div>
+        <div class="tab active">Custom Message</div>
+        <div class="tab">Custom Message for Chat</div>
+        <div class="tab">Custom Message for Task</div>
+        <div class="tab">Assign Members to Task</div>
+        <div class="tab">Others</div>
+        <div class="tab">JSON</div>
       </div>
       <div class="content-area">
         <div class="content show">
@@ -420,9 +421,14 @@
             <option value="10">10</option>
           </select>
         </div>
+        <div class="content">
+          <h2>JSON</h2>
+          <textarea id="json" rows="30"></textarea>
+        </div>
       </div>
 
       <button id="save">Save</button>
+      <button id="import" style="display: none">Import</button>
       <div id="status"></div>
       <script src="options.js"></script>
     </main>
