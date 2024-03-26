@@ -903,8 +903,10 @@ const initHatDialog = (textarea, targetType) => {
   const filterBySearchWord = (searchWord, highlightSelection) => {
     Array.from(ul.children).forEach((node) => {
       const s = searchWord.toLowerCase();
-      const dispName = node.querySelector("p")?.textContent.toLowerCase();
-      if (s === "" || dispName.includes(s)) {
+      const index = node.getAttribute("data-index");
+      const label = customLabels[index].toLowerCase();
+      const message = customMessages[index].toLowerCase();
+      if (s === "" || label.includes(s) || message.includes(s)) {
         node.style.display = "flex";
       } else {
         node.style.display = "none";
