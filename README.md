@@ -16,6 +16,10 @@
   - (bow)
 - Insert To tag on click user icon with Shift key
 
+### 1.8.1
+
+- 💄 search text from label and message
+
 ### 1.8.0
 
 - ✨ Enable to insert custom message with ^
