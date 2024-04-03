@@ -1,83 +1,49 @@
-let token;
+let accessToken;
 let myid;
 let language;
-const init = () => {
-  const getBy = (key) => {
-    return Array.from(document.querySelectorAll("script"))
-      .filter((x) => x.innerText !== undefined)
-      .find((x) => x.innerText.includes(key))
-      .innerText.split("\n")
-      .find((x) => x.includes(key))
-      .split("=")[1]
-      .replaceAll("'", "")
-      .replaceAll(";", "")
-      .trim();
-  };
-  token = getBy("ACCESS_TOKEN");
-  myid = getBy("MYID");
-  language = getBy("LANGUAGE");
-};
-
+let theme;
 let accountMap = {};
 let teamMap = {};
 let roomMap = {};
-const initAccountsAndTeams = async () => {
-  return chrome.runtime
-    .sendMessage({
-      type: "accounts",
-      host: location.host,
-      myid: myid,
-      token: token,
-    })
-    .then((res) => {
-      const result = JSON.parse(res.result);
-      accountMap = result.accounts;
-      teamMap = result.teams;
-      roomMap = result.rooms;
-    });
-};
+let teamMemberMap = {};
+window.addEventListener("message", (event) => {
+  if (event.data.action === "synced") {
+    accessToken = event.data.access_token;
+    myid = event.data.myid;
+    language = event.data.language;
+    theme = event.data.theme;
+    accountMap = JSON.parse(event.data.accounts);
+    teamMap = JSON.parse(event.data.teams);
+    roomMap = JSON.parse(event.data.rooms);
+    teamMemberMap = JSON.parse(event.data.team_members);
+    initObserver();
+    initListener();
+    initChatSendArea();
+    initTaskAddArea();
+  }
+});
 
 let roomId;
 const resetRoomId = () => {
   roomId = location.hash ? location.hash.match(/(?<=!rid)(.*)/)[0] : "";
 };
 
-let teamMemberMap = {};
-const resetTeamMembers = async () => {
-  return chrome.runtime
-    .sendMessage({
-      type: "team_members",
-      host: location.host,
-      myid: myid,
-      room_id: roomId,
-      token: token,
-    })
-    .then((res) => {
-      teamMemberMap = JSON.parse(res.result);
-    });
-};
-
 window.addEventListener("load", () => {
   setTimeout(() => {
-    init();
-    initAccountsAndTeams().then(() => {
-      resetRoomId();
-      resetTeamMembers().then(() => {
-        initChatSendArea();
-        initTaskAddArea();
-      });
+    resetRoomId();
+    window.postMessage({
+      action: "sync",
+      room_id: roomId,
     });
-    initObserver();
-    initListener();
   }, 1000);
 });
 
 window.addEventListener("hashchange", () => {
   setTimeout(() => {
     resetRoomId();
-    resetTeamMembers().then(() => {
-      initChatSendArea();
-      initTaskAddArea();
+    window.postMessage({
+      action: "sync",
+      room_id: roomId,
     });
   }, 100);
 });
@@ -768,10 +734,13 @@ const initAtMarkDialog = (textarea, targetType) => {
       li.firstChild.setAttribute("data-aid", `${accountId}`);
       li.firstChild.setAttribute(
         "src",
-        `https://appdata.chatwork.com/avatar/${accountMap[accountId].av}`
+        `https://appdata.chatwork.com${accountMap[accountId].av}`
       );
       const suffix = language === "ja" ? "さん" : "";
-      li.lastChild.textContent = `${accountMap[accountId].name}${suffix}`;
+      const name =
+        accountMap[accountId].nickname ??
+        `${accountMap[accountId].name}${suffix}`;
+      li.lastChild.textContent = name;
       ul.appendChild(li);
     });
     toList.parentNode.appendChild(node);
@@ -808,9 +777,9 @@ const initAtMarkDialog = (textarea, targetType) => {
           aid && accountMap[aid]
             ? (accountMap[aid]["name"] ?? "").toLowerCase()
             : "";
-        const nm =
+        const nickname =
           aid && accountMap[aid]
-            ? (accountMap[aid]["nm"] ?? "").toLowerCase()
+            ? (accountMap[aid]["nickname"] ?? "").toLowerCase()
             : "";
         const dp =
           aid && accountMap[aid]
@@ -831,7 +800,7 @@ const initAtMarkDialog = (textarea, targetType) => {
             s === "" ||
             dispName.includes(s) ||
             name.includes(s) ||
-            nm.includes(s) ||
+            nickname.includes(s) ||
             dp.includes(s) ||
             cwid.includes(s)
           ) {
@@ -994,7 +963,7 @@ const initTaskAssignArea = (iconParentNode, textarea) => {
     const icon = assignIcons[index];
     const members = assignMembers[index]
       .split("\n")
-      .filter((x) => roomMap[roomId].includes(x))
+      .filter((x) => roomMap[roomId].includes(Number(x)))
       .map((x) => Number(x));
     const roomIds = assignRoomIds[index].split("\n");
     if (
@@ -1322,7 +1291,7 @@ const getLimitType = (text) => {
 
 const createDefaultAssignIcon = (members) => {
   if (members.length === 1) {
-    return `<img src="https://appdata.chatwork.com/avatar/${
+    return `<img src="https://appdata.chatwork.com${
       accountMap[members[0]].av
     }" style="border-radius: 50%; width: 24px; height: 24px; margin-left: -4px;">`;
   } else {
@@ -1371,7 +1340,7 @@ const createAssignIconNode = (
           assign: assign,
           limit_type: limit_type,
           task_limit: task_limit,
-          token: token,
+          token: accessToken,
         })
         .then(() => {
           textarea.nextSibling.nextSibling.firstChild
@@ -1609,19 +1578,22 @@ const findDataForAtMarkFromLi = (node) => {
   if (!aid) {
     return null;
   }
+  const suffix = language === "ja" ? "さん" : "";
   if (aid.startsWith("team_")) {
     const teamId = aid.slice(5);
     const teamName = teamMap[teamId]?.name ?? "";
     let to = `To: ${teamName}\n`;
-    const suffix = language === "ja" ? "さん" : "";
-    const members = teamMemberMap[teamId] ?? [];
-    members.forEach((member) => {
-      const name = accountMap[member.aid]?.nm ?? "";
-      to = to + `[To:${member.aid}]${name}${suffix}\n`;
+    const aids = teamMemberMap[teamId] ?? [];
+    aids.forEach((aid) => {
+      if (accountMap[aid]) {
+        const name =
+          accountMap[aid].nickname ?? `${accountMap[aid].name}${suffix}`;
+        to = to + `[To:${aid}]${name}\n`;
+      }
     });
     return to;
   } else {
-    const name = node.lastChild?.textContent ?? "";
+    const name = accountMap[aid].nickname ?? `${accountMap[aid].name}${suffix}`;
     return `[To:${aid}]${name}\n`;
   }
 };
@@ -1645,5 +1617,5 @@ const findDataForHatFromLi = (node) => {
 };
 
 const isDark = () => {
-  return document.querySelector("body").classList.contains("dark");
+  return theme === "dark";
 };
