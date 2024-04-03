@@ -1,20 +1,9 @@
 # Chatwork Tools
 
-- Display icon for tags at chat area
-  - [info]
-  - [info][title]
-  - [code]
-  - [hr]
-  - frequently used emojis (max 10)
-  - custom emojis (max 5)
-- Display icon for tags and emoji at task area
-  - [info]
-  - [info][title]
-  - [code]
-  - [hr]
-  - (please)
-  - (bow)
-- Insert To tag on click user icon with Shift key
+### 1.8.2
+
+- ⚡️ use local chatwork function
+- 🐛 fix to decorate textarea on task area
 
 ### 1.8.1
 
