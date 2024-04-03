@@ -1047,7 +1047,9 @@ const initTaskEditArea = () => {
 
 const wrapTextarea = (textarea, targetType) => {
   let wrapArea;
-  if (textarea.parentNode.firstChild.id !== `__wrap_area_${targetType}`) {
+  if (textarea.previousSibling?.id === `__wrap_area_${targetType}`) {
+    wrapArea = textarea.previousSibling;
+  } else {
     wrapArea = document.createElement("pre");
     wrapArea.setAttribute("id", `__wrap_area_${targetType}`);
     wrapArea.setAttribute("role", "textbox");
@@ -1058,8 +1060,7 @@ const wrapTextarea = (textarea, targetType) => {
     wrapArea.setAttribute("class", textarea.getAttribute("class"));
     wrapArea.setAttribute("style", textarea.getAttribute("style"));
     wrapArea.style.position = "absolute";
-  } else {
-    wrapArea = textarea.parentNode.firstChild;
+    wrapArea.style.overflowY = "auto";
   }
   textarea.parentNode.style.position = "relative";
   textarea.parentNode.insertBefore(wrapArea, textarea);
