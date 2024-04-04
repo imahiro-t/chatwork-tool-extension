@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.9.0
+
+- 💄 increase max count for setting
+
 ### 1.8.3
 
 - 🐛 fix wrap textarea
