@@ -6,7 +6,12 @@
   "content_scripts": [
     {
       "matches": ["https://www.chatwork.com/", "https://kcw.kddi.ne.jp/"],
-      "js": ["/js/insert_tag.js", "/js/insert_to.js", "/js/copy_link.js"],
+      "js": [
+        "/js/common.js",
+        "/js/insert_tag.js",
+        "/js/insert_to.js",
+        "/js/copy_link.js"
+      ],
       "world": "ISOLATED"
     },
     {

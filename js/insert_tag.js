@@ -132,118 +132,34 @@ const DEFAULT_ICONS = Object.freeze({
 });
 
 let emojiCount = 5;
-const customChatIcons = ["", "", "", "", "", "", "", "", "", ""];
-const customChatMessages = ["", "", "", "", "", "", "", "", "", ""];
-const customChatRoomIds = ["", "", "", "", "", "", "", "", "", ""];
-const customTaskIcons = ["", "", "", "", "", "", "", "", "", ""];
-const customTaskMessages = ["", "", "", "", "", "", "", "", "", ""];
-const customTaskRoomIds = ["", "", "", "", "", "", "", "", "", ""];
-const assignIcons = ["", "", "", "", "", "", "", "", "", ""];
-const assignLabels = ["", "", "", "", "", "", "", "", "", ""];
-const assignMembers = ["", "", "", "", "", "", "", "", "", ""];
-const assignRoomIds = ["", "", "", "", "", "", "", "", "", ""];
-const customLabels = [
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-];
-const customMessages = [
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-];
+const customChatIcons = createArray(20);
+const customChatMessages = createArray(20);
+const customChatRoomIds = createArray(20);
+const customTaskIcons = createArray(20);
+const customTaskMessages = createArray(20);
+const customTaskRoomIds = createArray(20);
+const assignIcons = createArray(20);
+const assignLabels = createArray(20);
+const assignMembers = createArray(20);
+const assignRoomIds = createArray(20);
+const customLabels = createArray(20);
+const customMessages = createArray(20);
 
 chrome.storage.sync.get(
   {
     emoji_count: "5",
-    chat_icons: ["", "", "", "", "", "", "", "", "", ""],
-    chat_messages: ["", "", "", "", "", "", "", "", "", ""],
-    chat_room_ids: ["", "", "", "", "", "", "", "", "", ""],
-    task_icons: ["", "", "", "", "", "", "", "", "", ""],
-    task_messages: ["", "", "", "", "", "", "", "", "", ""],
-    task_room_ids: ["", "", "", "", "", "", "", "", "", ""],
-    assign_icons: ["", "", "", "", "", "", "", "", "", ""],
-    assign_labels: ["", "", "", "", "", "", "", "", "", ""],
-    assign_members: ["", "", "", "", "", "", "", "", "", ""],
-    assign_room_ids: ["", "", "", "", "", "", "", "", "", ""],
-    custom_labels: [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
-    custom_messages: [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ],
+    chat_icons: createArray(20),
+    chat_messages: createArray(20),
+    chat_room_ids: createArray(20),
+    task_icons: createArray(20),
+    task_messages: createArray(20),
+    task_room_ids: createArray(20),
+    assign_icons: createArray(20),
+    assign_labels: createArray(20),
+    assign_members: createArray(20),
+    assign_room_ids: createArray(20),
+    custom_labels: createArray(20),
+    custom_messages: createArray(20),
   },
   (items) => {
     emojiCount = items.emoji_count;
