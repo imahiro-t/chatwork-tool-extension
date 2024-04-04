@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.8.3
+
+- 🐛 fix wrap textarea
+
 ### 1.8.2
 
 - ⚡️ use local chatwork function
