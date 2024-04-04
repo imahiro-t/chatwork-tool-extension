@@ -3,3 +3,7 @@ const createArray = (size, value = "") => {
   array.fill(value);
   return array;
 };
+
+const htmlStringToNode = (str) => {
+  return document.createRange().createContextualFragment(str).firstChild;
+};

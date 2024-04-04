@@ -1268,10 +1268,6 @@ const createAssignIconNode = (
   return node;
 };
 
-const htmlStringToNode = (str) => {
-  return document.createRange().createContextualFragment(str).firstChild;
-};
-
 const textSelected = (textarea) => {
   if (textarea) {
     const selectionStart = textarea.selectionStart;
