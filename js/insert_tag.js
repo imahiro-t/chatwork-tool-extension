@@ -486,7 +486,6 @@ const initUploadChatArea = () => {
         "button"
       );
     textarea.style.height = "104px";
-    textarea.style.overflowY = "auto";
     textarea.style.padding = "8px";
     initChatArea(iconParentNode, textarea, TARGET_TYPE.upload_chat, sendButton);
   }
@@ -1012,7 +1011,6 @@ const initTaskAddArea = () => {
   if (iconParentNode && taskParentNode) {
     const textarea = taskParentNode.querySelector("textarea");
     textarea.style.height = "120px";
-    textarea.style.overflowY = "auto";
     initTaskArea(
       iconParentNode,
       taskParentNode,
@@ -1069,6 +1067,7 @@ const wrapTextarea = (textarea, targetType) => {
   textarea.style.caretColor = window.getComputedStyle(wrapArea).color;
   textarea.style.position = "relative";
   textarea.style.zIndex = 1;
+  textarea.style.overflowY = "auto";
   const observer = new MutationObserver(() => {
     wrapArea.innerHTML = decorateText(textarea.value, targetType);
     wrapArea.style.height = textarea.style.height;
