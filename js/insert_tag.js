@@ -131,61 +131,6 @@ const DEFAULT_ICONS = Object.freeze({
   9: `🔟`,
 });
 
-let emojiCount = 5;
-const customChatIcons = createArray(20);
-const customChatMessages = createArray(20);
-const customChatRoomIds = createArray(20);
-const customTaskIcons = createArray(20);
-const customTaskMessages = createArray(20);
-const customTaskRoomIds = createArray(20);
-const assignIcons = createArray(20);
-const assignLabels = createArray(20);
-const assignMembers = createArray(20);
-const assignRoomIds = createArray(20);
-const customLabels = createArray(20);
-const customMessages = createArray(20);
-
-chrome.storage.sync.get(
-  {
-    emoji_count: "5",
-    chat_icons: createArray(20),
-    chat_messages: createArray(20),
-    chat_room_ids: createArray(20),
-    task_icons: createArray(20),
-    task_messages: createArray(20),
-    task_room_ids: createArray(20),
-    assign_icons: createArray(20),
-    assign_labels: createArray(20),
-    assign_members: createArray(20),
-    assign_room_ids: createArray(20),
-    custom_labels: createArray(20),
-    custom_messages: createArray(20),
-  },
-  (items) => {
-    emojiCount = items.emoji_count;
-    for (i = 0; i < 10; i++) {
-      customChatIcons[i] = items.chat_icons[i];
-      customChatMessages[i] = items.chat_messages[i];
-      customChatRoomIds[i] = items.chat_room_ids[i];
-    }
-    for (i = 0; i < 10; i++) {
-      customTaskIcons[i] = items.task_icons[i];
-      customTaskMessages[i] = items.task_messages[i];
-      customTaskRoomIds[i] = items.task_room_ids[i];
-    }
-    for (i = 0; i < 10; i++) {
-      assignIcons[i] = items.assign_icons[i];
-      assignLabels[i] = items.assign_labels[i];
-      assignMembers[i] = items.assign_members[i];
-      assignRoomIds[i] = items.assign_room_ids[i];
-    }
-    for (i = 0; i < 20; i++) {
-      customLabels[i] = items.custom_labels[i];
-      customMessages[i] = items.custom_messages[i];
-    }
-  }
-);
-
 const initObserver = () => {
   const taskObserver = new MutationObserver((mutationRecords) => {
     if (
@@ -317,7 +262,7 @@ const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
       iconParentNode.appendChild(
         createHrNode(iconParentNode, textarea, targetType)
       );
-      const emojis = sortedEmojis().slice(0, emojiCount);
+      const emojis = sortedEmojis().slice(0, emojiMaxCount);
       emojis.forEach((emoji) => {
         iconParentNode.appendChild(
           createEmojiNode(
@@ -329,9 +274,10 @@ const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
           )
         );
       });
-      customChatIcons.forEach((customIcon, index) => {
-        const customMessage = customChatMessages[index];
-        const customRoomIds = customChatRoomIds[index].split("\n");
+      customChatMessages.forEach((customChatMessage, index) => {
+        const customMessage = customChatMessage.message;
+        const customRoomIds = (customChatMessage.room_ids ?? "").split("\n");
+        const customIcon = customChatMessage.icon;
         if (
           customMessage &&
           (customRoomIds[0] === "" || customRoomIds.includes(roomId))
@@ -750,7 +696,9 @@ const hatData = {
 };
 
 const initHatDialog = (textarea, targetType) => {
-  if (customLabels.every((label) => label.length === 0)) {
+  if (
+    customMessages.every((customMessage) => customMessage.label.length === 0)
+  ) {
     return;
   }
   const targetData = hatData;
@@ -775,11 +723,11 @@ const initHatDialog = (textarea, targetType) => {
   node.appendChild(ul);
   document.querySelector("#root").appendChild(node);
 
-  customLabels.forEach((label, index) => {
-    if (label.length > 0) {
+  customMessages.forEach((customMessage, index) => {
+    if (customMessage.label.length > 0) {
       const li = liForClone.cloneNode(true);
       li.setAttribute("data-index", `${index}`);
-      li.firstChild.textContent = `${label}`;
+      li.firstChild.textContent = `${customMessage.label}`;
       ul.appendChild(li);
     }
   });
@@ -788,8 +736,8 @@ const initHatDialog = (textarea, targetType) => {
     Array.from(ul.children).forEach((node) => {
       const s = searchWord.toLowerCase();
       const index = node.getAttribute("data-index");
-      const label = customLabels[index].toLowerCase();
-      const message = customMessages[index].toLowerCase();
+      const label = customMessages[index].label.toLowerCase();
+      const message = customMessages[index].message.toLowerCase();
       if (s === "" || label.includes(s) || message.includes(s)) {
         node.style.display = "flex";
       } else {
@@ -840,9 +788,10 @@ const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
     iconsNode.firstChild.appendChild(
       createEmojiNode(iconParentNode, textarea, targetType, "bow")
     );
-    customTaskIcons.forEach((customIcon, index) => {
-      const customMessage = customTaskMessages[index];
-      const customRoomIds = customTaskRoomIds[index].split("\n");
+    customTaskMessages.forEach((customTaskMessage, index) => {
+      const customMessage = customTaskMessage.message;
+      const customRoomIds = (customTaskMessage.room_ids ?? "").split("\n");
+      const customIcon = customTaskMessage.icon;
       if (
         customMessage &&
         (customRoomIds[0] === "" || customRoomIds.includes(roomId))
@@ -874,23 +823,23 @@ const initTaskAssignArea = (iconParentNode, textarea) => {
   iconsNode.setAttribute("style", "margin-top: -8px; padding: 0px 0px 4px");
   const ul = iconParentNode.cloneNode(false);
   iconsNode.appendChild(ul);
-  assignLabels.forEach((label, index) => {
-    const icon = assignIcons[index];
-    const members = assignMembers[index]
+  assignTaskMembers.forEach((assignTaskMember, index) => {
+    const icon = assignTaskMember.icon;
+    const members = (assignTaskMember.account_ids ?? "")
       .split("\n")
       .filter((x) => roomMap[roomId].includes(Number(x)))
       .map((x) => Number(x));
-    const roomIds = assignRoomIds[index].split("\n");
+    const roomIds = (assignTaskMember.room_ids ?? "").split("\n");
     if (
       members.length > 0 &&
-      (assignRoomIds[index] === "" || roomIds.includes(roomId))
+      (assignTaskMember.room_ids === "" || roomIds.includes(roomId))
     ) {
       iconsNode.firstChild.appendChild(
         createAssignIconNode(
           index,
           iconParentNode,
           textarea,
-          label,
+          assignTaskMember.label,
           icon,
           members
         )
@@ -1524,7 +1473,7 @@ const findDataForHat = (node) => {
 
 const findDataForHatFromLi = (node) => {
   const index = node.getAttribute("data-index");
-  const message = customMessages[index];
+  const message = customMessages[index].message;
   return message;
 };
 
