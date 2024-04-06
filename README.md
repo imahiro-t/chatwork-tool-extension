@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.10.0
+
+- 💄 change setting json format
+
 ### 1.9.0
 
 - 💄 increase max count for setting
