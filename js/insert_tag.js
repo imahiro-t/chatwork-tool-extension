@@ -1242,8 +1242,6 @@ const insertTag = (startTag, endTag, textarea, cursorPos) => {
       })
     );
     setTimeout(() => {
-      textarea.focus();
-      textarea.scrollTop = scrollTop;
       if (selection.length > 0) {
         if (cursorPos > -1) {
           textarea.selectionStart = selectionStart + cursorPos;
@@ -1258,6 +1256,7 @@ const insertTag = (startTag, endTag, textarea, cursorPos) => {
         textarea.selectionStart = selectionEnd + startTag.length;
         textarea.selectionEnd = selectionEnd + startTag.length;
       }
+      textarea.focus();
     }, 100);
   }
 };
