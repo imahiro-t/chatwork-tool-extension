@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.10.1
+
+- 🐛 fix caret position on insert tag
+
 ### 1.10.0
 
 - 💄 change setting json format
