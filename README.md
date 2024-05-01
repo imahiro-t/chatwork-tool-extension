@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.11.0
+
+- 💄 scale up image on hover
+
 ### 1.10.1
 
 - 🐛 fix caret position on insert tag
