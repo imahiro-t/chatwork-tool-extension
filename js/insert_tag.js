@@ -1063,8 +1063,12 @@ const createEmojiNode = (
   const node = iconParentNode.firstChild.cloneNode(true);
   const id = `__icon_${emoji}_${targetType}`;
   node.setAttribute("data-tooltip", EMOJI[emoji]);
-  node.querySelector("button")?.setAttribute("id", id);
-  node.querySelector("button")?.setAttribute("aria-label", EMOJI[emoji]);
+  const button = node.querySelector("button");
+  if (button) {
+    button.setAttribute("id", id);
+    button.setAttribute("aria-label", EMOJI[emoji]);
+    scaleUpImage(button);
+  }
   node
     .querySelector("svg")
     ?.parentNode.replaceChild(image, node.querySelector("svg"));
@@ -1097,11 +1101,14 @@ const createCustomEmojiNode = (
       : `<span style="font-size: 16px; align-self: center;">${DEFAULT_ICONS[index]}</span>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
+  const id = `__icon_${index}_${targetType}`;
   node.setAttribute("data-tooltip", textWithEllipsis(text));
-  node
-    .querySelector("button")
-    ?.setAttribute("id", `__icon_${index}_${targetType}`);
-  node.querySelector("button")?.setAttribute("aria-label", text);
+  const button = node.querySelector("button");
+  if (button) {
+    button.setAttribute("id", id);
+    button.setAttribute("aria-label", text);
+    scaleUpImage(button);
+  }
   node
     .querySelector("svg")
     ?.parentNode.replaceChild(iconNode, node.querySelector("svg"));
@@ -1116,6 +1123,16 @@ const createCustomEmojiNode = (
     }
   });
   return node;
+};
+
+const scaleUpImage = (button) => {
+  button.setAttribute("onmouseover", `this.style.background='transparent'`);
+  button.firstChild.classList.remove("iconContainer");
+  button.firstChild.classList.add("reactionSelectorTooltip__emoticonContainer");
+  button.firstChild.setAttribute(
+    "style",
+    "position: relative; width: 32px; height: 32px; margin: -8px;"
+  );
 };
 
 const getTaskLimit = (text) => {
@@ -1180,9 +1197,14 @@ const createAssignIconNode = (
     }</span>`
   );
   const node = iconParentNode.firstChild.cloneNode(true);
+  const id = `__icon_assign_${index}`;
   node.setAttribute("data-tooltip", textWithEllipsis(label));
-  node.querySelector("button")?.setAttribute("id", `__icon_assign_${index}`);
-  node.querySelector("button")?.setAttribute("aria-label", label);
+  const button = node.querySelector("button");
+  if (button) {
+    button.setAttribute("id", id);
+    button.setAttribute("aria-label", label);
+    scaleUpImage(button);
+  }
   node
     .querySelector("svg")
     ?.parentNode.replaceChild(iconNode, node.querySelector("svg"));
