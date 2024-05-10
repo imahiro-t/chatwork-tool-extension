@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.11.1
+
+- 🐛 fix emoji counter
+
 ### 1.11.0
 
 - 💄 scale up image on hover
