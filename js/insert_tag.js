@@ -17,7 +17,6 @@ window.addEventListener("message", (event) => {
     roomMap = JSON.parse(event.data.rooms);
     teamMemberMap = JSON.parse(event.data.team_members);
     initObserver();
-    initListener();
     initChatSendArea();
     initTaskAddArea();
   }
@@ -31,6 +30,7 @@ const resetRoomId = () => {
 window.addEventListener("load", () => {
   setTimeout(() => {
     resetRoomId();
+    initListener();
     window.postMessage({
       action: "sync",
       room_id: roomId,
