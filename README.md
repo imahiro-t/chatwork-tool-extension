@@ -1,5 +1,9 @@
 # Chatwork Tools
 
+### 1.11.2
+
+- 🐛 fix to decorate textarea
+
 ### 1.11.1
 
 - 🐛 fix emoji counter
