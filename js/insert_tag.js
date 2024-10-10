@@ -923,7 +923,7 @@ const wrapTextarea = (textarea, targetType) => {
     wrapArea.setAttribute("class", textarea.getAttribute("class"));
     wrapArea.setAttribute("style", textarea.getAttribute("style"));
     wrapArea.style.position = "absolute";
-    wrapArea.style.overflowY = "auto";
+    wrapArea.style.overflowY = "scroll";
   }
   textarea.parentNode.style.position = "relative";
   textarea.parentNode.insertBefore(wrapArea, textarea);
@@ -932,7 +932,7 @@ const wrapTextarea = (textarea, targetType) => {
   textarea.style.caretColor = window.getComputedStyle(wrapArea).color;
   textarea.style.position = "relative";
   textarea.style.zIndex = 1;
-  textarea.style.overflowY = "auto";
+  textarea.style.overflowY = "scroll";
   const observer = new MutationObserver(() => {
     wrapArea.innerHTML = decorateText(textarea.value, targetType);
     wrapArea.style.height = textarea.style.height;
