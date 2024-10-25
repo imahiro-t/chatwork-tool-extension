@@ -7,7 +7,7 @@ window.addEventListener("message", (event) => {
 const sync = (roomId) => {
   const myid = CW.application.myId.userId.value;
   const language = CW.application.languageCode.value;
-  const theme = CW.application.themeRenderParam.theme;
+  const theme = document.body.classList.contains("light") ? "light" : "dark";
   const access_token =
     CW.application.domainAPIServiceContext.taskAPIService.apiClient.accessToken;
 
