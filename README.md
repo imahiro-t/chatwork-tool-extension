@@ -1,6 +1,11 @@
 # Chatwork Tools
 
+### 1.11.4
+
+- 🥅 change error log to info log
+
 ### 1.11.3
+
 - 🐛 fix to detect theme
 
 ### 1.11.2
