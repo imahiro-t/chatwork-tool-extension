@@ -318,7 +318,7 @@ const initChatArea = (iconParentNode, textarea, targetType, sendButton) => {
     }
     initAtMarkDialog(textarea, targetType);
     initHatDialog(textarea, targetType);
-    wrapTextarea(textarea, targetType);
+    wrapTextarea(textarea, targetType, false);
   }
 };
 
@@ -810,7 +810,7 @@ const initTaskArea = (iconParentNode, taskParentNode, textarea, targetType) => {
     });
     taskParentNode.firstChild.before(iconsNode);
     initHatDialog(textarea, targetType);
-    wrapTextarea(textarea, targetType);
+    wrapTextarea(textarea, targetType, true);
   }
 };
 
@@ -908,7 +908,7 @@ const initTaskEditArea = () => {
   }
 };
 
-const wrapTextarea = (textarea, targetType) => {
+const wrapTextarea = (textarea, targetType, isTask) => {
   let wrapArea;
   if (textarea.previousSibling?.id === `__wrap_area_${targetType}`) {
     wrapArea = textarea.previousSibling;
@@ -923,7 +923,7 @@ const wrapTextarea = (textarea, targetType) => {
     wrapArea.setAttribute("class", textarea.getAttribute("class"));
     wrapArea.setAttribute("style", textarea.getAttribute("style"));
     wrapArea.style.position = "absolute";
-    wrapArea.style.overflowY = "scroll";
+    wrapArea.style.overflowY = isTask ? "auto" : "scroll";
   }
   textarea.parentNode.style.position = "relative";
   textarea.parentNode.insertBefore(wrapArea, textarea);
@@ -932,7 +932,7 @@ const wrapTextarea = (textarea, targetType) => {
   textarea.style.caretColor = window.getComputedStyle(wrapArea).color;
   textarea.style.position = "relative";
   textarea.style.zIndex = 1;
-  textarea.style.overflowY = "scroll";
+  textarea.style.overflowY = isTask ? "auto" : "scroll";
   const observer = new MutationObserver(() => {
     wrapArea.innerHTML = decorateText(textarea.value, targetType);
     wrapArea.style.height = textarea.style.height;
